@@ -1,0 +1,10 @@
+DROP INDEX IF EXISTS idx_users_active;
+DROP INDEX IF EXISTS idx_history_record;
+DROP INDEX IF EXISTS idx_comments_record;
+DROP INDEX IF EXISTS idx_photos_record;
+DROP INDEX IF EXISTS idx_movable_status;
+DROP INDEX IF EXISTS idx_movable_registrar;
+DROP INDEX IF EXISTS idx_immovable_name;
+DROP INDEX IF EXISTS idx_immovable_woreda;
+DROP INDEX IF EXISTS idx_immovable_status;
+DROP INDEX IF EXISTS idx_immovable_registrar;

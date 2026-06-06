@@ -1,0 +1,11 @@
+DROP TRIGGER IF EXISTS immovable_records_set_updated_at ON immovable_records;
+DROP TABLE IF EXISTS immovable_records;
+DROP TYPE IF EXISTS record_type;
+DROP TYPE IF EXISTS sex_type;
+DROP TYPE IF EXISTS accessibility_level;
+DROP TYPE IF EXISTS quality_level;
+DROP TYPE IF EXISTS damage_level;
+DROP TYPE IF EXISTS overall_condition;
+DROP TYPE IF EXISTS age_method;
+DROP TYPE IF EXISTS immovable_owner_type;
+DROP TYPE IF EXISTS record_status;

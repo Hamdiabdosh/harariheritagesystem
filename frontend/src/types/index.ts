@@ -134,6 +134,7 @@ export interface RecordComment {
   record_type: RecordType;
   record_id: string;
   author_id: string;
+  author_name: string;
   comment_text: string;
   created_at: string;
 }

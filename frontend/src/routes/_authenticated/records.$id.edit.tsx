@@ -54,6 +54,7 @@ function EditRecordPage() {
 
   const detail = immovableQ.data ?? movableQ.data;
   const canComment = role === "supervisor" || role === "manager";
+  const canViewComments = true;
 
   return (
     <div className="space-y-4">
@@ -101,6 +102,8 @@ function EditRecordPage() {
             comments={detail.comments}
             photos={detail.photos}
             canComment={canComment}
+            canViewComments={canViewComments}
+            readOnly={role === "registrar"}
           />
         </>
       )}
@@ -119,6 +122,8 @@ function EditRecordPage() {
             comments={detail.comments}
             photos={detail.photos}
             canComment={canComment}
+            canViewComments={canViewComments}
+            readOnly={role === "registrar"}
           />
         </>
       )}
@@ -133,6 +138,8 @@ function RecordDetailTabs({
   comments,
   photos,
   canComment,
+  canViewComments,
+  readOnly,
 }: {
   recordType: RecordType;
   recordId: string;
@@ -140,6 +147,8 @@ function RecordDetailTabs({
   comments: RecordComment[];
   photos: RecordPhoto[];
   canComment: boolean;
+  canViewComments: boolean;
+  readOnly?: boolean;
 }) {
   const { t } = useTranslation();
 
@@ -166,6 +175,8 @@ function RecordDetailTabs({
             recordType={recordType}
             recordId={recordId}
             canComment={canComment}
+            canViewComments={canViewComments}
+            readOnly={readOnly}
           />
         </TabsContent>
         <TabsContent value="photos" className="mt-4">

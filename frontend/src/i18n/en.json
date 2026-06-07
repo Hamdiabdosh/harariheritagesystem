@@ -97,7 +97,8 @@
     "placeholder": "Write your comment...",
     "submit": "Add Comment",
     "error": "Failed to add comment.",
-    "authorFallback": "User"
+    "authorFallback": "User",
+    "readOnly": ""
   },
   "detail": {
     "tabs": {
@@ -114,7 +115,17 @@
     "approveSuccess": "Record approved and moved to final review",
     "returnSuccess": "Record returned to registrar",
     "actionBar": "Review Actions",
-    "pendingCta": "Go to Pending Queue"
+    "pendingCta": "Go to Pending Queue",
+    "waitingTime": "Pending — Waiting Time",
+    "noPending": "No pending records",
+    "overdue": "Overdue",
+    "days": "days"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications",
+    "viewAll": "View all",
+    "timeAgo": "{{n}} days ago"
   },
   "manager": {
     "allSubtitle": "All heritage records — full access",

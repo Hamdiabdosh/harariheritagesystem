@@ -5,6 +5,47 @@ import { useMutation } from "@tanstack/react-query";
 import type { RecordPhoto } from "@/types";
 import { getPhotoUrl } from "@/lib/photos";
 
+const MAX_SIDE = 1200;
+const JPEG_QUALITY = 0.82;
+
+async function compressImage(file: File): Promise<File> {
+  if (file.type !== "image/jpeg" && file.type !== "image/png") {
+    return file;
+  }
+
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
+    const width = Math.round(bitmap.width * scale);
+    const height = Math.round(bitmap.height * scale);
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      bitmap.close();
+      return file;
+    }
+
+    ctx.drawImage(bitmap, 0, 0, width, height);
+    bitmap.close();
+
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob(resolve, "image/jpeg", JPEG_QUALITY);
+    });
+    if (!blob) return file;
+
+    return new File([blob], file.name, {
+      type: "image/jpeg",
+      lastModified: Date.now(),
+    });
+  } catch {
+    return file;
+  }
+}
+
 interface PhotoUploaderProps {
   recordId: string;
   photos: RecordPhoto[];
@@ -25,6 +66,7 @@ export function PhotoUploader({
   const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
+  const [compressing, setCompressing] = useState(false);
 
   const uploadMut = useMutation({
     mutationFn: onUpload,
@@ -45,7 +87,14 @@ export function PhotoUploader({
         setError(t("photos.tooLarge", { name: file.name }));
         continue;
       }
-      await uploadMut.mutateAsync(file).catch(() => {});
+      setCompressing(true);
+      let uploadFile = file;
+      try {
+        uploadFile = await compressImage(file);
+      } finally {
+        setCompressing(false);
+      }
+      await uploadMut.mutateAsync(uploadFile).catch(() => {});
     }
     if (inputRef.current) inputRef.current.value = "";
   };
@@ -63,16 +112,20 @@ export function PhotoUploader({
         </div>
         <button
           type="button"
-          disabled={disabled || uploadMut.isPending}
+          disabled={disabled || compressing || uploadMut.isPending}
           onClick={() => inputRef.current?.click()}
           className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
         >
-          {uploadMut.isPending ? (
+          {compressing || uploadMut.isPending ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
           ) : (
             <Upload className="h-3.5 w-3.5" />
           )}
-          <span className="font-amharic">{t("photos.upload")}</span>
+          <span className="font-amharic">
+            {compressing
+              ? t("photos.compressing", { defaultValue: "Compressing..." })
+              : t("photos.upload")}
+          </span>
         </button>
         <input
           ref={inputRef}

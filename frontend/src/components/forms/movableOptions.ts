@@ -37,21 +37,27 @@ export const MOVABLE_CONDITIONS: Opt[] = [
 ];
 
 export const ACQUISITION_METHODS: Opt[] = [
-  { value: "purchase", labelAm: "ግዢ", labelEn: "Purchase" },
-  { value: "donation", labelAm: "ስጦታ", labelEn: "Donation" },
-  { value: "inheritance", labelAm: "ውርስ", labelEn: "Inheritance" },
-  { value: "transfer", labelAm: "ዝውውር", labelEn: "Transfer" },
-  { value: "found", labelAm: "የተገኘ", labelEn: "Found" },
+  { value: "excavation", labelAm: "በቁፋሮ", labelEn: "Excavation" },
+  { value: "donation", labelAm: "በስጦታ", labelEn: "Donation / Gift" },
+  { value: "inheritance", labelAm: "በውርስ", labelEn: "Inheritance" },
+  { value: "purchase", labelAm: "በግዥ", labelEn: "Purchase" },
+  { value: "loan", labelAm: "በውሰት", labelEn: "Loan" },
+  { value: "custody", labelAm: "በአደራ", labelEn: "Custody" },
+  { value: "unknown", labelAm: "አይታወቅም", labelEn: "Unknown" },
 ];
 
 export const MATERIALS: Opt[] = [
-  { value: "wood", labelAm: "እንጨት", labelEn: "Wood" },
-  { value: "metal", labelAm: "ብረት", labelEn: "Metal" },
-  { value: "textile", labelAm: "ጨርቅ", labelEn: "Textile" },
-  { value: "leather", labelAm: "ቆዳ", labelEn: "Leather" },
+  { value: "gold", labelAm: "ወርቅ", labelEn: "Gold" },
+  { value: "silver", labelAm: "ብር", labelEn: "Silver" },
+  { value: "bronze", labelAm: "ነሐስ", labelEn: "Bronze / Brass" },
+  { value: "iron", labelAm: "ብረት", labelEn: "Iron" },
+  { value: "clay", labelAm: "ሸክላ", labelEn: "Clay / Ceramic" },
   { value: "stone", labelAm: "ድንጋይ", labelEn: "Stone" },
-  { value: "paper", labelAm: "ወረቀት", labelEn: "Paper" },
-  { value: "ceramic", labelAm: "ሴራሚክ", labelEn: "Ceramic" },
+  { value: "wood", labelAm: "እንጨት", labelEn: "Wood" },
+  { value: "textile", labelAm: "ጨርቅ", labelEn: "Textile" },
+  { value: "ivory", labelAm: "አለላ", labelEn: "Ivory / Bone" },
+  { value: "leather", labelAm: "ቆዳ", labelEn: "Leather" },
+  { value: "paper", labelAm: "ወረቀት", labelEn: "Paper / Parchment" },
   { value: "other", labelAm: "ሌላ", labelEn: "Other" },
 ];
 

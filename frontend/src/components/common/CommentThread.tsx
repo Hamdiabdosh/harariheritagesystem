@@ -11,6 +11,8 @@ interface CommentThreadProps {
   recordType: RecordType;
   recordId: string;
   canComment: boolean;
+  canViewComments?: boolean;
+  readOnly?: boolean;
 }
 
 function formatDate(iso: string, locale: string) {
@@ -32,6 +34,8 @@ export function CommentThread({
   recordType,
   recordId,
   canComment,
+  canViewComments = true,
+  readOnly = false,
 }: CommentThreadProps) {
   const { t, i18n } = useTranslation();
   const qc = useQueryClient();
@@ -59,7 +63,7 @@ export function CommentThread({
     addMut.mutate(trimmed);
   };
 
-  if (comments.length === 0 && !canComment) {
+  if (comments.length === 0 && readOnly) {
     return (
       <EmptyState
         icon={<MessageSquare className="h-6 w-6" />}
@@ -70,11 +74,11 @@ export function CommentThread({
 
   return (
     <div className="space-y-4">
-      {comments.length === 0 && canComment && (
+      {comments.length === 0 && canComment && !readOnly && (
         <p className="font-amharic text-sm text-muted-foreground">{t("comments.add")}</p>
       )}
 
-      {sorted.length > 0 && (
+      {canViewComments && sorted.length > 0 && (
         <ul className="space-y-3">
           {sorted.map((c) => (
             <li
@@ -83,7 +87,7 @@ export function CommentThread({
             >
               <div className="flex items-baseline justify-between gap-2">
                 <span className="text-xs font-medium text-muted-foreground">
-                  {t("comments.authorFallback")}
+                  {c.author_name}
                 </span>
                 <time className="text-xs text-muted-foreground">
                   {formatDate(c.created_at, i18n.language)}
@@ -95,7 +99,7 @@ export function CommentThread({
         </ul>
       )}
 
-      {canComment && (
+      {canComment && !readOnly && (
         <div className="space-y-2 border-t border-border pt-4">
           <textarea
             value={text}

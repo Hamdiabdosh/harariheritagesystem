@@ -97,7 +97,8 @@
     "placeholder": "አስተያየትዎን ይጻፉ...",
     "submit": "አስተያየት አክል",
     "error": "አስተያየት ማከል አልተቻለም።",
-    "authorFallback": "ተጠቃሚ"
+    "authorFallback": "ተጠቃሚ",
+    "readOnly": ""
   },
   "detail": {
     "tabs": {
@@ -114,7 +115,17 @@
     "approveSuccess": "መዝገቡ ፀድቆ ወደ ሥራ አስኪያጅ ተልኳል",
     "returnSuccess": "መዝገቡ ወደ መዝጋቢ ተመልሷል",
     "actionBar": "የግምገማ እርምጃዎች",
-    "pendingCta": "ለግምገማ የቀረቡ →"
+    "pendingCta": "ለግምገማ የቀረቡ →",
+    "waitingTime": "ጊዜ የቆዩ ፈቃደኛ ዝርዝር",
+    "noPending": "ምንም ፈቃደኛ የለም",
+    "overdue": "ዘግይቷል",
+    "days": "ቀናት"
+  },
+  "notifications": {
+    "title": "ማሳወቂያዎች",
+    "empty": "ምንም ማሳወቂያ የለም",
+    "viewAll": "ሁሉንም ይመልከቱ",
+    "timeAgo": "ከ {{n}} ቀናት በፊት"
   },
   "manager": {
     "allSubtitle": "ሁሉም የቅርስ መዛግብት — ሙሉ መዳረሻ",

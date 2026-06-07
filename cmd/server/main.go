@@ -147,8 +147,10 @@ func setupRouter(cfg *config.Config, pool *pgxpool.Pool) *gin.Engine {
 	api := router.Group("/api/v1")
 	api.GET("/health", healthHandler(pool))
 
-	api.POST("/auth/login", authHandler.Login)
-	api.POST("/auth/refresh", authHandler.Refresh)
+	// Auth endpoints are rate-limited: burst of 10, then 1 attempt per 10 seconds per IP.
+	authRateLimit := middleware.RateLimit(10, 0.1)
+	api.POST("/auth/login", authRateLimit, authHandler.Login)
+	api.POST("/auth/refresh", authRateLimit, authHandler.Refresh)
 
 	authorized := api.Group("")
 	authorized.Use(middleware.AuthRequired(authParser))

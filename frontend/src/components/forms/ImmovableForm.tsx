@@ -41,6 +41,7 @@ import {
   CURRENT_USES,
   HARARI_HOUSE_GRADES,
   NEIGHBORHOOD_TYPES,
+  RELATED_DOCS,
 } from "./immovableOptions";
 
 interface ImmovableFormProps {
@@ -436,18 +437,20 @@ export function ImmovableForm({ mode, initialRecord, photos = [] }: ImmovableFor
             en="Yes"
           />
         </Field>
+        {form.has_threat && (
+          <Field am="የስጋት ምክንያት" en="Threat Reason" span={2}>
+            <TextInput
+              value={form.maintenance_reason ?? ""}
+              onChange={(e) => update("maintenance_reason", e.target.value)}
+            />
+          </Field>
+        )}
         <Field am="ጥገና ተደርጓል?" en="Maintenance Done?">
           <Switch
             checked={!!form.maintenance_done}
             onChange={(v) => update("maintenance_done", v)}
             am="አዎ"
             en="Yes"
-          />
-        </Field>
-        <Field am="የጥገና ምክንያት" en="Maintenance Reason">
-          <TextInput
-            value={form.maintenance_reason ?? ""}
-            onChange={(e) => update("maintenance_reason", e.target.value)}
           />
         </Field>
         <Field am="ጥገናው የተደረገበት" en="Maintenance By">
@@ -485,6 +488,13 @@ export function ImmovableForm({ mode, initialRecord, photos = [] }: ImmovableFor
         </Field>
         <Field am="ማስታወሻ" en="Notes" span={3}>
           <TextArea value={form.notes ?? ""} onChange={(e) => update("notes", e.target.value)} />
+        </Field>
+        <Field am="ተዛማጅ መረጃዎች" en="Related Documents" span={3}>
+          <CheckboxList
+            options={RELATED_DOCS}
+            value={form.related_docs ?? []}
+            onChange={(v) => update("related_docs", v)}
+          />
         </Field>
       </FormSection>
 

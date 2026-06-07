@@ -1,79 +1,67 @@
 import { apiClient } from "./client";
-import type {
-  ApiResponse,
-  RecordType,
-  RecordComment,
-  StatusHistoryEntry,
-  AddCommentBody,
-  ApproveBody,
-  ReturnBody,
-} from "@/types";
+import type { ApiResponse, RecordComment, RecordStatus, RecordType } from "@/types";
+
+interface StatusResult {
+  status: RecordStatus;
+  approved_at?: string;
+}
 
 export async function reviewApprove(
-  type: RecordType,
-  id: string,
+  recordType: RecordType,
+  recordId: string,
   comment?: string,
-): Promise<void> {
-  const body: ApproveBody = comment ? { comment } : {};
-  await apiClient.put(`/records/${type}/${id}/review-approve`, body);
+): Promise<StatusResult> {
+  const { data } = await apiClient.put<ApiResponse<StatusResult>>(
+    `/records/${recordType}/${recordId}/review-approve`,
+    comment ? { comment_text: comment } : {},
+  );
+  return data.data;
 }
 
 export async function reviewReturn(
-  type: RecordType,
-  id: string,
+  recordType: RecordType,
+  recordId: string,
   comment: string,
-): Promise<void> {
-  const body: ReturnBody = { comment };
-  await apiClient.put(`/records/${type}/${id}/review-return`, body);
+): Promise<StatusResult> {
+  const { data } = await apiClient.put<ApiResponse<StatusResult>>(
+    `/records/${recordType}/${recordId}/review-return`,
+    { comment_text: comment },
+  );
+  return data.data;
 }
 
 export async function finalApprove(
-  type: RecordType,
-  id: string,
+  recordType: RecordType,
+  recordId: string,
   comment?: string,
-): Promise<void> {
-  const body: ApproveBody = comment ? { comment } : {};
-  await apiClient.put(`/records/${type}/${id}/final-approve`, body);
+): Promise<StatusResult> {
+  const { data } = await apiClient.put<ApiResponse<StatusResult>>(
+    `/records/${recordType}/${recordId}/final-approve`,
+    comment ? { comment_text: comment } : {},
+  );
+  return data.data;
 }
 
 export async function finalReturn(
-  type: RecordType,
-  id: string,
+  recordType: RecordType,
+  recordId: string,
   comment: string,
-): Promise<void> {
-  const body: ReturnBody = { comment };
-  await apiClient.put(`/records/${type}/${id}/final-return`, body);
-}
-
-export async function getComments(
-  type: RecordType,
-  id: string,
-): Promise<RecordComment[]> {
-  const { data } = await apiClient.get<ApiResponse<{ comments: RecordComment[] }>>(
-    `/records/${type}/${id}/comments`,
+): Promise<StatusResult> {
+  const { data } = await apiClient.put<ApiResponse<StatusResult>>(
+    `/records/${recordType}/${recordId}/final-return`,
+    { comment_text: comment },
   );
-  return data.data.comments;
+  return data.data;
 }
 
 export async function addComment(
-  type: RecordType,
-  id: string,
+  recordType: RecordType,
+  recordId: string,
   commentText: string,
 ): Promise<RecordComment> {
-  const body: AddCommentBody = { comment_text: commentText };
   const { data } = await apiClient.post<ApiResponse<{ comment: RecordComment }>>(
-    `/records/${type}/${id}/comments`,
-    body,
+    `/records/${recordType}/${recordId}/comments`,
+    { comment_text: commentText },
   );
   return data.data.comment;
-}
-
-export async function getHistory(
-  type: RecordType,
-  id: string,
-): Promise<StatusHistoryEntry[]> {
-  const { data } = await apiClient.get<ApiResponse<{ history: StatusHistoryEntry[] }>>(
-    `/records/${type}/${id}/history`,
-  );
-  return data.data.history;
 }

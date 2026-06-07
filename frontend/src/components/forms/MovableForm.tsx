@@ -38,6 +38,7 @@ import {
   ACCESSIBILITY_LEVELS,
   SEX_TYPES,
 } from "./movableOptions";
+import { RELATED_DOCS } from "./immovableOptions";
 
 interface MovableFormProps {
   mode: "create" | "edit";
@@ -500,12 +501,14 @@ export function MovableForm({ mode, initialRecord, photos = [] }: MovableFormPro
             en="Yes"
           />
         </Field>
-        <Field am="የስጋት መግለጫ" en="Threat Description" span={2}>
-          <TextInput
-            value={form.threat_description ?? ""}
-            onChange={(e) => update("threat_description", e.target.value)}
-          />
-        </Field>
+        {form.has_threat && (
+          <Field am="የስጋት መግለጫ" en="Threat Description" span={2}>
+            <TextInput
+              value={form.threat_description ?? ""}
+              onChange={(e) => update("threat_description", e.target.value)}
+            />
+          </Field>
+        )}
         <Field am="ጥገና ተደርጓል?" en="Maintenance Done?">
           <Switch
             checked={!!form.maintenance_done}
@@ -553,6 +556,13 @@ export function MovableForm({ mode, initialRecord, photos = [] }: MovableFormPro
           <TextArea
             value={form.notes ?? ""}
             onChange={(e) => update("notes", e.target.value)}
+          />
+        </Field>
+        <Field am="ተዛማጅ መረጃዎች" en="Related Documents" span={3}>
+          <CheckboxList
+            options={RELATED_DOCS}
+            value={form.related_docs ?? []}
+            onChange={(v) => update("related_docs", v)}
           />
         </Field>
       </FormSection>

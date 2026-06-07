@@ -20,8 +20,8 @@ from any phone browser. The backend is a Go REST API. All UI text is bilingual (
 
 | Layer       | Technology                                         |
 |-------------|----------------------------------------------------|
-| Frontend    | React 18 + Vite (PWA), TypeScript, Tailwind CSS    |
-| Routing     | React Router v6                                    |
+| Frontend    | React 19 + Vite 7 + TanStack Start, TypeScript, Tailwind CSS |
+| Routing     | TanStack Router (file-based routes in `frontend/src/routes/`) |
 | State       | Zustand                                            |
 | Data fetch  | TanStack Query v5 + Axios                          |
 | Forms       | React Hook Form + Zod                              |
@@ -60,38 +60,32 @@ go.mod
 CURSOR.md
 ```
 
-### Frontend
+### Frontend (`frontend/src/`)
 ```
-/src/
-  api/            client.ts, auth.ts, users.ts, immovable.ts,
-                  movable.ts, photos.ts, workflow.ts, dashboard.ts, export.ts
-  components/
-    Layout/       AppLayout.tsx, Sidebar.tsx, Topbar.tsx, ProtectedRoute.tsx
-    UI/           StatusBadge.tsx, RecordCard.tsx, CommentThread.tsx,
-                  StatusTimeline.tsx, PhotoUploader.tsx, GpsButton.tsx,
-                  ConfirmModal.tsx, ReturnModal.tsx, SectionProgress.tsx,
-                  LoadingSpinner.tsx, EmptyState.tsx, ErrorBoundary.tsx
-    Form/         ImmovableFormSection1–8.tsx, MovableFormSections.tsx,
-                  AutoSaveIndicator.tsx
-  pages/
-    shared/       LoginPage.tsx, UnauthorizedPage.tsx
-    registrar/    RegistrarDashboard.tsx, MyRecordsList.tsx,
-                  RecordDetail.tsx, ImmovableFormPage.tsx,
-                  MovableFormPage.tsx, EditFormPage.tsx
-    supervisor/   SupervisorDashboard.tsx, PendingQueue.tsx,
-                  AllRecordsList.tsx, RecordDetailPage.tsx
-    manager/      ManagerDashboard.tsx, ReviewedQueue.tsx,
-                  AllRecordsList.tsx, RecordDetailPage.tsx,
-                  UserManagementPage.tsx, CreateUserPage.tsx,
-                  EditUserPage.tsx, ReportsPage.tsx
-  stores/         authStore.ts, languageStore.ts
-  hooks/          useAuth.ts, useAutoSave.ts, useGPS.ts
-  i18n/           index.ts, am.json, en.json
-  types/          index.ts
-  utils/          formatters.ts, validators.ts
-  App.tsx
-  main.tsx
+api/              client.ts, auth.ts, users.ts, records.ts, immovable.ts,
+                  movable.ts, workflow.ts, dashboard.ts, export.ts
+components/
+  ui/             shadcn/ui primitives (generated)
+  common/         StatusBadge, LoadingSpinner, EmptyState, StatusTimeline,
+                  CommentThread, ReturnModal, …
+  layout/         AppLayout.tsx, Sidebar.tsx, Topbar.tsx
+  forms/          Field.tsx, ImmovableForm, MovableForm, PhotoUploader, *Options.ts
+  records/        RecordCard, RecordsList, RecordFilters
+  dashboard/      RegistrarDashboard, StatCard, …
+  workflow/       Review actions, modals (as added)
+routes/           TanStack Router file-based routes (= pages)
+  __root.tsx      app shell
+  login.tsx
+  _authenticated.tsx          layout + auth guard
+  _authenticated/             dashboard, records, pending, reviewed, users, reports
+stores/           authStore.ts, languageStore.ts
+hooks/            use-mobile.tsx, …
+i18n/             index.ts, am.json, en.json
+lib/              utils.ts, config.server.ts, error helpers
+types/            index.ts
 ```
+
+Do **not** create `src/pages/` — routes live under `src/routes/`. See `frontend/README.md`.
 
 ---
 
@@ -260,7 +254,7 @@ Approved records cannot be modified by anyone under any circumstance.
 2. [ ] Update Go model struct in `/internal/models/`
 3. [ ] Update repository INSERT and UPDATE queries
 4. [ ] Update TypeScript interface in `/src/types/index.ts`
-5. [ ] Add field to the correct form section component in `/src/components/Form/`
+5. [ ] Add field to the correct form component in `frontend/src/components/forms/`
 6. [ ] Add Zod validation rule in the form schema
 7. [ ] Add i18n keys in `am.json` and `en.json`
 8. [ ] Add field to the read-only record detail view
@@ -380,15 +374,11 @@ export function useSubmitRecord() {
 }
 ```
 
-### Protected Route (React Router)
+### Authenticated layout (TanStack Router)
 ```typescript
-// src/components/Layout/ProtectedRoute.tsx
-export function ProtectedRoute({ allowedRoles }: { allowedRoles: Role[] }) {
-  const { isAuthenticated, user } = useAuthStore()
-  if (!isAuthenticated) return <Navigate to="/login" replace />
-  if (!allowedRoles.includes(user!.role)) return <Navigate to="/unauthorized" replace />
-  return <Outlet />
-}
+// frontend/src/routes/_authenticated.tsx
+// Wraps all logged-in routes with AppLayout and redirects to /login when unauthenticated.
+// Per-route role checks use <Navigate to="/unauthorized" /> in the route component.
 ```
 
 ---

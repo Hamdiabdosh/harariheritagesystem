@@ -11,6 +11,18 @@ import (
 	"github.com/go-pdf/fpdf"
 
 	"github.com/qirs-mezgeb/api/internal/models"
+	photostore "github.com/qirs-mezgeb/api/internal/photos"
+)
+
+const (
+	pdfBrandR = 45
+	pdfBrandG = 82
+	pdfBrandB = 130
+
+	pdfMarginL   = 15.0
+	pdfMarginR   = 15.0
+	pdfMarginTop = 34.0
+	pdfMarginBot = 20.0
 )
 
 type pdfRecord struct {
@@ -22,7 +34,7 @@ type pdfRecord struct {
 	PhotoPath  string
 }
 
-func buildImmovablePDF(record *models.ImmovableRecord, photos []models.RecordPhoto, mediaPath string) ([]byte, error) {
+func buildImmovablePDF(record *models.ImmovableRecord, recordPhotos []models.RecordPhoto, mediaPath string) ([]byte, error) {
 	fields := [][2]string{
 		{"Name (Amharic)", record.NameAmharic},
 		{"Name (Local)", stringValue(record.NameLocal)},
@@ -46,11 +58,11 @@ func buildImmovablePDF(record *models.ImmovableRecord, photos []models.RecordPho
 		Status:     string(record.Status),
 		ApprovedAt: record.ApprovedAt,
 		Fields:     fields,
-		PhotoPath:  firstPhotoPath(photos, mediaPath),
+		PhotoPath:  firstPhotoPath(recordPhotos, mediaPath),
 	})
 }
 
-func buildMovablePDF(record *models.MovableRecord, photos []models.RecordPhoto, mediaPath string) ([]byte, error) {
+func buildMovablePDF(record *models.MovableRecord, recordPhotos []models.RecordPhoto, mediaPath string) ([]byte, error) {
 	fields := [][2]string{
 		{"Name (Amharic)", record.NameAmharic},
 		{"Name (Local)", stringValue(record.NameLocal)},
@@ -73,72 +85,43 @@ func buildMovablePDF(record *models.MovableRecord, photos []models.RecordPhoto, 
 		Status:     string(record.Status),
 		ApprovedAt: record.ApprovedAt,
 		Fields:     fields,
-		PhotoPath:  firstPhotoPath(photos, mediaPath),
+		PhotoPath:  firstPhotoPath(recordPhotos, mediaPath),
 	})
 }
 
 func buildRecordPDF(record pdfRecord) ([]byte, error) {
+	printedAt := time.Now().UTC()
+
 	pdf := fpdf.New("P", "mm", "A4", "")
-	pdf.SetMargins(15, 15, 15)
+	pdf.SetMargins(pdfMarginL, pdfMarginTop, pdfMarginR)
+	pdf.SetAutoPageBreak(true, pdfMarginBot)
+
+	if pdf.RegisterImageOptionsReader(
+		"logo",
+		fpdf.ImageOptions{ImageType: "JPG", ReadDpi: true},
+		bytes.NewReader(logoJPEG),
+	) == nil {
+		return nil, fmt.Errorf("register logo: invalid image data")
+	}
+
+	pdf.SetHeaderFunc(func() {
+		drawPDFHeader(pdf, record, pdf.PageNo() == 1)
+	})
+	pdf.SetFooterFunc(func() {
+		drawPDFFooter(pdf, printedAt)
+	})
+	pdf.AliasNbPages("")
+
 	pdf.AddPage()
-	pdf.SetFont("Helvetica", "B", 16)
-	pdf.Cell(0, 10, "Qirs Mezgeb Heritage Registry")
-	pdf.Ln(12)
-
-	pdf.SetFont("Helvetica", "B", 13)
-	pdf.MultiCell(0, 7, record.Title, "", "L", false)
-	pdf.Ln(2)
-
-	pdf.SetFont("Helvetica", "", 11)
-	pdf.Cell(45, 7, "Record ID:")
-	pdf.SetFont("Helvetica", "B", 11)
-	pdf.Cell(0, 7, record.RecordID)
-	pdf.Ln(7)
-
-	pdf.SetFont("Helvetica", "", 11)
-	pdf.Cell(45, 7, "Status:")
-	pdf.Cell(0, 7, record.Status)
-	pdf.Ln(7)
-
-	if record.ApprovedAt != nil {
-		pdf.Cell(45, 7, "Approved At:")
-		pdf.Cell(0, 7, record.ApprovedAt.UTC().Format("2006-01-02 15:04 MST"))
-		pdf.Ln(10)
-	}
-
-	pdf.SetFont("Helvetica", "B", 12)
-	pdf.Cell(0, 8, "Record Details")
-	pdf.Ln(8)
-
-	pdf.SetFont("Helvetica", "", 10)
-	for _, field := range record.Fields {
-		if strings.TrimSpace(field[1]) == "" {
-			continue
-		}
-		pdf.SetFont("Helvetica", "B", 10)
-		pdf.Cell(45, 6, field[0]+":")
-		pdf.SetFont("Helvetica", "", 10)
-		pdf.MultiCell(0, 6, sanitizePDFText(field[1]), "", "L", false)
-		pdf.Ln(1)
-	}
+	drawRecordTitleBlock(pdf, record)
+	drawRecordDetails(pdf, record)
 
 	if record.PhotoPath != "" {
-		pdf.Ln(4)
-		pdf.SetFont("Helvetica", "B", 12)
-		pdf.Cell(0, 8, "Primary Photo")
-		pdf.Ln(6)
-
-		options := fpdf.ImageOptions{ImageType: imageTypeForPath(record.PhotoPath), ReadDpi: true}
-		pdf.ImageOptions(record.PhotoPath, 15, pdf.GetY(), 80, 0, false, options, 0, "")
+		drawRecordPhoto(pdf, record.PhotoPath)
 	}
 
 	if record.Status == string(models.StatusApproved) {
-		pdf.SetAlpha(0.2, "Normal")
-		pdf.SetFont("Helvetica", "B", 36)
-		pdf.SetTextColor(200, 0, 0)
-		pdf.Text(50, 180, "APPROVED")
-		pdf.SetAlpha(1, "Normal")
-		pdf.SetTextColor(0, 0, 0)
+		drawApprovedWatermark(pdf)
 	}
 
 	var buf bytes.Buffer
@@ -149,19 +132,190 @@ func buildRecordPDF(record pdfRecord) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func firstPhotoPath(photos []models.RecordPhoto, mediaPath string) string {
-	if len(photos) == 0 {
+func drawPDFHeader(pdf *fpdf.Fpdf, record pdfRecord, firstPage bool) {
+	pdf.ImageOptions("logo", pdfMarginL, 8, 18, 0, false, fpdf.ImageOptions{}, 0, "")
+
+	pdf.SetXY(36, 9)
+	pdf.SetFont("Helvetica", "B", 14)
+	pdf.SetTextColor(pdfBrandR, pdfBrandG, pdfBrandB)
+	pdf.Cell(0, 6, "Qirs Mezgeb")
+
+	pdf.SetXY(36, 15)
+	pdf.SetFont("Helvetica", "", 9)
+	pdf.SetTextColor(70, 70, 70)
+	pdf.Cell(0, 5, "Heritage Registration System")
+
+	pdf.SetXY(36, 20)
+	pdf.SetFont("Helvetica", "I", 8)
+	pdf.Cell(0, 4, "Harari Culture, Heritage & Tourism Bureau")
+
+	lineY := 28.0
+	if !firstPage {
+		pdf.SetXY(36, 14)
+		pdf.SetFont("Helvetica", "", 8)
+		pdf.SetTextColor(100, 100, 100)
+		pdf.Cell(0, 4, sanitizePDFText(record.RecordID))
+		lineY = 22
+	}
+
+	pdf.SetDrawColor(pdfBrandR, pdfBrandG, pdfBrandB)
+	pdf.SetLineWidth(0.5)
+	pdf.Line(pdfMarginL, lineY, 210-pdfMarginR, lineY)
+	pdf.SetTextColor(0, 0, 0)
+}
+
+func drawPDFFooter(pdf *fpdf.Fpdf, printedAt time.Time) {
+	pageW, pageH := pdf.GetPageSize()
+	footerY := pageH - 14
+
+	pdf.SetDrawColor(200, 200, 200)
+	pdf.SetLineWidth(0.2)
+	pdf.Line(pdfMarginL, footerY, pageW-pdfMarginR, footerY)
+
+	pdf.SetY(footerY + 2)
+	pdf.SetFont("Helvetica", "", 7)
+	pdf.SetTextColor(90, 90, 90)
+	pdf.CellFormat(55, 4, "Qirs Mezgeb Heritage Registry", "", 0, "L", false, 0, "")
+	pdf.CellFormat(
+		pageW-pdfMarginL-pdfMarginR-110,
+		4,
+		fmt.Sprintf("Page %d of {nb}", pdf.PageNo()),
+		"",
+		0,
+		"C",
+		false,
+		0,
+		"",
+	)
+	pdf.CellFormat(55, 4, printedAt.Format("2006-01-02 15:04 UTC"), "", 0, "R", false, 0, "")
+
+	pdf.Ln(4)
+	pdf.SetFont("Helvetica", "I", 6)
+	pdf.CellFormat(
+		0,
+		3,
+		"Official heritage registration document — generated electronically",
+		"",
+		0,
+		"C",
+		false,
+		0,
+		"",
+	)
+	pdf.SetTextColor(0, 0, 0)
+}
+
+func drawRecordTitleBlock(pdf *fpdf.Fpdf, record pdfRecord) {
+	pdf.SetFont("Helvetica", "B", 13)
+	pdf.SetTextColor(pdfBrandR, pdfBrandG, pdfBrandB)
+	pdf.MultiCell(0, 7, record.Title, "", "L", false)
+	pdf.Ln(3)
+
+	pdf.SetFillColor(240, 245, 250)
+	pdf.SetDrawColor(pdfBrandR, pdfBrandG, pdfBrandB)
+	pdf.SetLineWidth(0.2)
+
+	metaY := pdf.GetY()
+	pdf.Rect(pdfMarginL, metaY, 180, 18, "FD")
+
+	pdf.SetXY(pdfMarginL+3, metaY+3)
+	pdf.SetFont("Helvetica", "B", 9)
+	pdf.SetTextColor(60, 60, 60)
+	pdf.Cell(38, 5, "Record ID:")
+	pdf.SetFont("Helvetica", "", 9)
+	pdf.SetTextColor(0, 0, 0)
+	pdf.Cell(52, 5, sanitizePDFText(record.RecordID))
+
+	pdf.SetXY(pdfMarginL+3, metaY+10)
+	pdf.SetFont("Helvetica", "B", 9)
+	pdf.SetTextColor(60, 60, 60)
+	pdf.Cell(38, 5, "Status:")
+	pdf.SetFont("Helvetica", "", 9)
+	pdf.SetTextColor(0, 0, 0)
+	pdf.Cell(52, 5, humanizeStatus(record.Status))
+
+	if record.ApprovedAt != nil {
+		pdf.SetXY(105, metaY+3)
+		pdf.SetFont("Helvetica", "B", 9)
+		pdf.SetTextColor(60, 60, 60)
+		pdf.Cell(38, 5, "Approved:")
+		pdf.SetFont("Helvetica", "", 9)
+		pdf.SetTextColor(0, 0, 0)
+		pdf.Cell(0, 5, record.ApprovedAt.UTC().Format("2006-01-02 15:04 UTC"))
+	}
+
+	pdf.SetY(metaY + 22)
+}
+
+func drawRecordDetails(pdf *fpdf.Fpdf, record pdfRecord) {
+	pdf.SetFont("Helvetica", "B", 11)
+	pdf.SetTextColor(pdfBrandR, pdfBrandG, pdfBrandB)
+	pdf.Cell(0, 7, "Record Details")
+	pdf.Ln(2)
+
+	pdf.SetDrawColor(pdfBrandR, pdfBrandG, pdfBrandB)
+	pdf.SetLineWidth(0.3)
+	pdf.Line(pdfMarginL, pdf.GetY(), pdfMarginL+40, pdf.GetY())
+	pdf.Ln(4)
+
+	pdf.SetFont("Helvetica", "", 10)
+	pdf.SetTextColor(0, 0, 0)
+
+	for _, field := range record.Fields {
+		if strings.TrimSpace(field[1]) == "" {
+			continue
+		}
+		pdf.SetFont("Helvetica", "B", 9)
+		pdf.SetTextColor(60, 60, 60)
+		pdf.Cell(48, 6, field[0]+":")
+		pdf.SetFont("Helvetica", "", 9)
+		pdf.SetTextColor(0, 0, 0)
+		pdf.MultiCell(0, 6, sanitizePDFText(field[1]), "", "L", false)
+		pdf.Ln(1)
+	}
+}
+
+func drawRecordPhoto(pdf *fpdf.Fpdf, photoPath string) {
+	pdf.Ln(4)
+	pdf.SetFont("Helvetica", "B", 11)
+	pdf.SetTextColor(pdfBrandR, pdfBrandG, pdfBrandB)
+	pdf.Cell(0, 7, "Primary Photo")
+	pdf.Ln(2)
+	pdf.SetDrawColor(pdfBrandR, pdfBrandG, pdfBrandB)
+	pdf.Line(pdfMarginL, pdf.GetY(), pdfMarginL+40, pdf.GetY())
+	pdf.Ln(5)
+
+	options := fpdf.ImageOptions{ImageType: imageTypeForPath(photoPath), ReadDpi: true}
+	pdf.ImageOptions(photoPath, pdfMarginL, pdf.GetY(), 80, 0, false, options, 0, "")
+	pdf.Ln(55)
+}
+
+func drawApprovedWatermark(pdf *fpdf.Fpdf) {
+	pdf.SetAlpha(0.15, "Normal")
+	pdf.SetFont("Helvetica", "B", 48)
+	pdf.SetTextColor(200, 0, 0)
+	pdf.Text(35, 180, "APPROVED")
+	pdf.SetAlpha(1, "Normal")
+	pdf.SetTextColor(0, 0, 0)
+}
+
+func humanizeStatus(status string) string {
+	return strings.ReplaceAll(strings.ReplaceAll(status, "_", " "), "-", " ")
+}
+
+func firstPhotoPath(recordPhotos []models.RecordPhoto, mediaPath string) string {
+	if len(recordPhotos) == 0 {
 		return ""
 	}
-	path := photos[0].FilePath
-	if filepath.IsAbs(path) {
-		if _, err := os.Stat(path); err == nil {
-			return path
-		}
+	path := recordPhotos[0].FilePath
+	candidates := []string{
+		photostore.ResolveAbsolutePath(mediaPath, path),
+		filepath.Join(mediaPath, filepath.Base(path)),
 	}
-	fullPath := filepath.Join(mediaPath, path)
-	if _, err := os.Stat(fullPath); err == nil {
-		return fullPath
+	for _, abs := range candidates {
+		if _, err := os.Stat(abs); err == nil {
+			return abs
+		}
 	}
 	return ""
 }

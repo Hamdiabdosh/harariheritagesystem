@@ -53,6 +53,14 @@ func TestAuthorizePDFExport(t *testing.T) {
 			wantErr: ErrNotApproved,
 		},
 		{
+			name:    "manager approved",
+			status:  models.StatusApproved,
+			ownerID: registrarID,
+			userID:  uuid.New(),
+			role:    models.RoleManager,
+			wantErr: nil,
+		},
+		{
 			name:    "supervisor pending review",
 			status:  models.StatusPendingReview,
 			ownerID: registrarID,

@@ -1,0 +1,222 @@
+{
+  "app": {
+    "name": "ቅርስ መዝገብ",
+    "subtitle": "የሐረሪ ክልል ቅርስ ምዝገባ ሥርዓት"
+  },
+  "auth": {
+    "login": "ግባ",
+    "logout": "ውጣ",
+    "email": "ኢሜይል",
+    "password": "የይለፍ ቃል",
+    "signIn": "ይግቡ",
+    "signingIn": "በመግባት ላይ...",
+    "invalidCredentials": "ስህተት ኢሜይል ወይም የይለፍ ቃል",
+    "loginTitle": "ወደ መለያዎ ይግቡ",
+    "loginSubtitle": "ቅርስዎን ለመመዝገብ ይግቡ"
+  },
+  "nav": {
+    "dashboard": "ዳሽቦርድ",
+    "myRecords": "የእኔ መዛግብት",
+    "allRecords": "ሁሉም መዛግብት",
+    "pendingReview": "ግምገማ የሚጠብቁ",
+    "reviewed": "የተገመገሙ",
+    "users": "ተጠቃሚዎች",
+    "reports": "ሪፖርቶች",
+    "newImmovable": "አዲስ የማይንቀሳቀስ ቅርስ",
+    "newMovable": "አዲስ ተንቀሳቃሽ ቅርስ"
+  },
+  "roles": {
+    "registrar": "መዝጋቢ",
+    "supervisor": "ተቆጣጣሪ",
+    "manager": "ሥራ አስኪያጅ"
+  },
+  "status": {
+    "draft": "ረቂቅ",
+    "pending_review": "ግምገማ የሚጠብቅ",
+    "under_review": "በግምገማ ላይ",
+    "returned": "የተመለሰ",
+    "approved": "የተፈቀደ"
+  },
+  "recordType": {
+    "immovable": "የማይንቀሳቀስ",
+    "movable": "ተንቀሳቃሽ"
+  },
+  "dashboard": {
+    "totalImmovable": "ጠቅላላ የማይንቀሳቀስ ቅርስ",
+    "totalMovable": "ጠቅላላ ተንቀሳቃሽ ቅርስ",
+    "totalRecords": "ጠቅላላ መዛግብት",
+    "byStatus": "በሁኔታ",
+    "loadError": "ስታቲስቲክስ መጫን አልተቻለም"
+  },
+  "records": {
+    "mySubtitle": "የመዘገቧቸው መዛግብት",
+    "emptyTitle": "ምንም መዝገብ የለም",
+    "emptyDescription": "ለመጀመር አዲስ የማይንቀሳቀስ ወይም ተንቀሳቃሽ ቅርስ ይፍጠሩ።",
+    "loadError": "መዛግብቱን መጫን አልተቻለም",
+    "pagination": "ከ{{total}} ውስጥ {{shown}} ቀርቦ · ገጽ {{page}} / {{pages}}"
+  },
+  "filters": {
+    "searchPlaceholder": "በስም ወይም በመለያ ይፈልጉ...",
+    "allTypes": "ሁሉም ዓይነቶች",
+    "allStatuses": "ሁሉም ሁኔታዎች",
+    "woreda": "ወረዳ",
+    "clear": "አጽዳ"
+  },
+  "common": {
+    "loading": "በመጫን ላይ...",
+    "empty": "ምንም ነገር አልተገኘም",
+    "language": "ቋንቋ",
+    "amharic": "አማርኛ",
+    "english": "English",
+    "unauthorized": "ይህን ገጽ ለማየት ፈቃድ የለዎትም",
+    "backToHome": "ወደ ዳሽቦርድ ተመለስ",
+    "retry": "እንደገና ሞክር",
+    "prev": "ቀዳሚ",
+    "next": "ቀጣይ",
+    "cancel": "ሰርዝ",
+    "save": "አስቀምጥ",
+    "yes": "አዎ",
+    "no": "አይ"
+  },
+  "immovable": {
+    "title": "የማይንቀሳቀስ ቅርስ",
+    "subtitle": "ሁሉንም አስፈላጊ ክፍሎች ይሙሉ። ረቂቅ አስቀምጠው በኋላ መቀጠል ይችላሉ።"
+  },
+  "movable": {
+    "title": "ተንቀሳቃሽ ቅርስ",
+    "subtitle": "ሁሉንም አስፈላጊ ክፍሎች ይሙሉ። ረቂቅ አስቀምጠው በኋላ መቀጠል ይችላሉ።"
+  },
+  "history": {
+    "title": "የሁኔታ ታሪክ",
+    "empty": "እስካሁን ምንም ለውጥ አልተመዘገበም።"
+  },
+  "comments": {
+    "title": "አስተያየቶች",
+    "empty": "እስካሁን አስተያየት የለም።",
+    "add": "ከታች የመጀመሪያውን አስተያየት ይጨምሩ።",
+    "placeholder": "አስተያየትዎን ይጻፉ...",
+    "submit": "አስተያየት አክል",
+    "error": "አስተያየት ማከል አልተቻለም።",
+    "authorFallback": "ተጠቃሚ"
+  },
+  "detail": {
+    "tabs": {
+      "details": "ዝርዝር",
+      "history": "ታሪክ",
+      "comments": "አስተያየቶች",
+      "photos": "ፎቶዎች"
+    },
+    "backToRecords": "የእኔ መዛግብት"
+  },
+  "supervisor": {
+    "pendingSubtitle": "ለግምገማዎ የሚጠብቁ መዛግብት",
+    "allSubtitle": "ከሁሉም መዝጋቢዎች ያሉ ሁሉም መዛግብት",
+    "approveSuccess": "መዝገቡ ፀድቆ ወደ ሥራ አስኪያጅ ተልኳል",
+    "returnSuccess": "መዝገቡ ወደ መዝጋቢ ተመልሷል",
+    "actionBar": "የግምገማ እርምጃዎች",
+    "pendingCta": "ለግምገማ የቀረቡ →"
+  },
+  "manager": {
+    "allSubtitle": "ሁሉም የቅርስ መዛግብት — ሙሉ መዳረሻ",
+    "reviewedSubtitle": "በተቆጣጣሪ የተገመገሙ፣ የእርስዎን የመጨረሻ ውሳኔ የሚጠብቁ",
+    "usersSubtitle": "የመዝጋቢ እና ተቆጣጣሪ መለያዎችን ያስተዳድሩ",
+    "approveSuccess": "መዝገቡ ሙሉ በሙሉ ፀድቆ ተቆልፏል",
+    "returnSuccess": "መዝገቡ ወደ ተቆጣጣሪ ለማሻሻያ ተመልሷል",
+    "finalReviewCta": "ለመጨረሻ ፈቃድ የቀረቡ →"
+  },
+  "actions": {
+    "approve": "አፅድቅ",
+    "returnToRegistrar": "ወደ መዝጋቢ መለስ",
+    "returnToSupervisor": "ወደ ተቆጣጣሪ መለስ",
+    "finalApprove": "የመጨረሻ ፈቃድ",
+    "downloadPdf": "PDF አውርድ",
+    "viewDetail": "ዝርዝር ይመልከቱ"
+  },
+  "users": {
+    "newUser": "አዲስ ተጠቃሚ",
+    "fullName": "ሙሉ ስም",
+    "email": "ኢሜይል",
+    "password": "የይለፍ ቃል",
+    "role": "ሚና",
+    "language": "ቋንቋ",
+    "isActive": "ንቁ",
+    "actions": "እርምጃዎች",
+    "createTitle": "አዲስ ተጠቃሚ ፍጠር",
+    "editTitle": "ተጠቃሚ አርትዕ",
+    "confirmDeactivate": "ተጠቃሚን አቦዝን",
+    "deactivateWarning": "ይህ ተጠቃሚ ወዲያው መዳረሻ ያጣል።",
+    "deactivateBody": "{{name}}ን ለማቦዘን ይፈልጋሉ? ወዲያው መዳረሻ ያጣሉ።",
+    "emailExists": "ይህ ኢሜይል ያለው ተጠቃሚ አስቀድሞ ይገኛል።",
+    "filterRole": "በሚና አጣራ",
+    "filterAll": "ሁሉም ሚናዎች",
+    "active": "ንቁ",
+    "inactive": "ንቁ ያልሆነ",
+    "allUsers": "ሁሉም ተጠቃሚዎች",
+    "requiredName": "ሙሉ ስም አስፈላጊ ነው።",
+    "nameTooLong": "ስም ከ100 ቁምፊ በላይ መሆን አይችልም።",
+    "invalidEmail": "ትክክለኛ ኢሜይል ያስገቡ።",
+    "passwordTooShort": "የይለፍ ቃል ቢያንስ 8 ቁምፊ መሆን አለበት።",
+    "requiredRole": "ሚና አስፈላጊ ነው።"
+  },
+  "reports": {
+    "title": "ሪፖርቶች እና ላክ",
+    "exportSection": "ወደ CSV ላክ",
+    "exportButton": "CSV አውርድ",
+    "exporting": "በመላክ ላይ...",
+    "statsSection": "ጠቅላላ ስታቲስቲክስ",
+    "totalRecords": "ጠቅላላ መዛግብት",
+    "filterType": "የቅርስ ዓይነት",
+    "filterStatus": "ሁኔታ",
+    "filterWoreda": "ወረዳ",
+    "filterDateFrom": "ከቀን",
+    "filterDateTo": "እስከ ቀን"
+  },
+  "toast": {
+    "approveSuccess": "መዝገቡ በተሳካ ሁኔታ ፀድቋል",
+    "returnSuccess": "መዝገቡ በተሳካ ሁኔታ ተመልሷል",
+    "finalApproveSuccess": "መዝገቡ ሙሉ በሙሉ ፀድቋል",
+    "createUserSuccess": "ተጠቃሚ በተሳካ ሁኔታ ተፈጥሯል",
+    "updateUserSuccess": "ተጠቃሚ በተሳካ ሁኔታ ተዘምኗል",
+    "deactivateSuccess": "ተጠቃሚ ታቦዝኗል",
+    "error": "እርምጃው አልተሳካም — እንደገና ይሞክሩ"
+  },
+  "modal": {
+    "returnTitle": "Return Record",
+    "returnTitleAm": "መዝገቡን መለስ",
+    "reasonLabel": "Reason for return (required)",
+    "reasonLabelAm": "የመልስ ምክንያት (አስፈላጊ)",
+    "cancel": "ሰርዝ",
+    "confirm": "አረጋግጥ",
+    "reasonRequired": "የመልስ ምክንያት ያስፈልጋል።",
+    "failed": "መልስ አልተሳካም።"
+  },
+  "forms": {
+    "saveDraft": "ረቂቅ አስቀምጥ",
+    "submitForReview": "ለግምገማ አስረክብ",
+    "comingSoon": "ይህ ቅጽ በቀጣዩ ምዕራፍ ይዘጋጃል።",
+    "submitMissing": "ከመላክዎ በፊት እነዚህን መስኮች ይሙሉ፦ {{fields}}",
+    "required": {
+      "nameAmharic": "ስም (አማርኛ) ያስፈልጋል።",
+      "location": "ወረዳ እና ቀበሌ ያስፈልጋሉ።"
+    },
+    "fields": {
+      "name_amharic": "ስም (አማርኛ)",
+      "category": "ምድብ",
+      "woreda": "ወረዳ",
+      "kebele": "ቀበሌ",
+      "current_use": "የአሁን አጠቃቀም",
+      "owner_type": "የባለቤት ዓይነት",
+      "construction_period": "የግንባታ ጊዜ",
+      "age_method": "የዕድሜ ዘዴ",
+      "storage_location": "የማስቀመጫ ቦታ",
+      "materials": "ቁሳቁሶች"
+    }
+  },
+  "photos": {
+    "title": "ፎቶዎች",
+    "upload": "ይጫኑ",
+    "count": "{{n}} ፎቶ(ዎች)",
+    "empty": "እስካሁን ፎቶ የለም — የቅርሱን ምስሎች ይጫኑ።",
+    "tooLarge": "{{name}} ከ10 MB በላይ ስለሆነ ተተውቷል።"
+  }
+}

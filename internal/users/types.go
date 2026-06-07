@@ -3,8 +3,6 @@ package users
 import (
 	"time"
 
-	"github.com/google/uuid"
-
 	"github.com/qirs-mezgeb/api/internal/models"
 )
 
@@ -16,26 +14,18 @@ type ListFilters struct {
 }
 
 type UserItem struct {
-	ID        uuid.UUID       `json:"id"`
-	FullName  string          `json:"full_name"`
-	Email     string          `json:"email"`
-	Role      models.Role     `json:"role"`
-	Language  models.Language `json:"language"`
-	IsActive  bool            `json:"is_active"`
-	CreatedAt time.Time       `json:"created_at"`
-	UpdatedAt time.Time       `json:"updated_at"`
+	models.UserPublic
+	IsActive  bool      `json:"is_active"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func toUserItem(user *models.User) UserItem {
 	return UserItem{
-		ID:        user.ID,
-		FullName:  user.FullName,
-		Email:     user.Email,
-		Role:      user.Role,
-		Language:  user.Language,
-		IsActive:  user.IsActive,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
+		UserPublic: user.ToPublic(),
+		IsActive:   user.IsActive,
+		CreatedAt:  user.CreatedAt,
+		UpdatedAt:  user.UpdatedAt,
 	}
 }
 

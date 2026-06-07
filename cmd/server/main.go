@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
+	"strings"
 	"syscall"
 	"time"
 
@@ -90,6 +92,8 @@ func setupRouter(cfg *config.Config, pool *pgxpool.Pool) *gin.Engine {
 	router.Use(middleware.CORS(cfg.AllowedOrigins))
 	router.Use(middleware.ErrorHandler())
 
+	registerMediaRoutes(router, cfg.MediaPath)
+
 	router.GET("/health", healthHandler(pool))
 
 	authRepo := auth.NewRepository(pool)
@@ -110,13 +114,14 @@ func setupRouter(cfg *config.Config, pool *pgxpool.Pool) *gin.Engine {
 	photosService := photos.NewService(photosRepo, immovableRepo, movableRepo, cfg.MediaPath)
 	photosHandler := photos.NewHandler(photosService)
 
-	immovableService := immovable.NewService(immovableRepo, photosService, auditService)
+	workflowRepo := workflow.NewRepository(pool)
+
+	immovableService := immovable.NewService(immovableRepo, photosService, auditService, workflowRepo)
 	immovableHandler := immovable.NewHandler(immovableService)
 
-	movableService := movable.NewService(movableRepo, photosService, auditService)
+	movableService := movable.NewService(movableRepo, photosService, auditService, workflowRepo)
 	movableHandler := movable.NewHandler(movableService)
 
-	workflowRepo := workflow.NewRepository(pool)
 	workflowService := workflow.NewService(workflowRepo, auditService, immovableRepo, movableRepo)
 	workflowHandler := workflow.NewHandler(workflowService)
 
@@ -158,6 +163,15 @@ func setupRouter(cfg *config.Config, pool *pgxpool.Pool) *gin.Engine {
 	managerOnly.PUT("/users/:id", usersHandler.Update)
 	managerOnly.DELETE("/users/:id", usersHandler.Delete)
 
+	// Sub-resource GET routes must be registered before /records/{immovable,movable}/:id.
+	// Gin's radix tree treats "immovable" as a static segment and rejects /:id/pdf otherwise.
+	authorized.GET("/records/immovable/:id/pdf", withRecordType("immovable", exportHandler.ExportPDF))
+	authorized.GET("/records/movable/:id/pdf", withRecordType("movable", exportHandler.ExportPDF))
+	authorized.GET("/records/immovable/:id/comments", withRecordType("immovable", workflowHandler.GetComments))
+	authorized.GET("/records/movable/:id/comments", withRecordType("movable", workflowHandler.GetComments))
+	authorized.GET("/records/immovable/:id/history", withRecordType("immovable", workflowHandler.GetHistory))
+	authorized.GET("/records/movable/:id/history", withRecordType("movable", workflowHandler.GetHistory))
+
 	authorized.GET("/records/immovable", immovableHandler.List)
 	authorized.GET("/records/immovable/:id", immovableHandler.GetByID)
 
@@ -191,14 +205,35 @@ func setupRouter(cfg *config.Config, pool *pgxpool.Pool) *gin.Engine {
 	supervisorManager.POST("/records/:type/:id/comments", workflowHandler.AddComment)
 	supervisorManager.GET("/export/records/csv", exportHandler.ExportCSV)
 
-	authorized.GET("/records/:type/:id/comments", workflowHandler.GetComments)
-	authorized.GET("/records/:type/:id/history", workflowHandler.GetHistory)
-	authorized.GET("/records/:type/:id/pdf", exportHandler.ExportPDF)
-
 	authorized.GET("/dashboard/stats", dashboardHandler.GetStats)
 	authorized.GET("/records", dashboardHandler.ListRecords)
 
 	return router
+}
+
+// withRecordType injects :type for handlers that expect /records/:type/:id/... paths.
+func withRecordType(recordType string, handler gin.HandlerFunc) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Params = append([]gin.Param{{Key: "type", Value: recordType}}, c.Params...)
+		handler(c)
+	}
+}
+
+func registerMediaRoutes(router *gin.Engine, mediaRoot string) {
+	router.GET("/media/*filepath", func(c *gin.Context) {
+		rel := strings.TrimPrefix(c.Param("filepath"), "/")
+		candidates := []string{
+			photos.ResolveAbsolutePath(mediaRoot, rel),
+			filepath.Join(mediaRoot, filepath.Base(rel)),
+		}
+		for _, abs := range candidates {
+			if _, err := os.Stat(abs); err == nil {
+				c.File(abs)
+				return
+			}
+		}
+		c.Status(http.StatusNotFound)
+	})
 }
 
 func healthHandler(pool *pgxpool.Pool) gin.HandlerFunc {

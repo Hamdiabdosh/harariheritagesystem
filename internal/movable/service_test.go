@@ -22,10 +22,14 @@ func TestValidateForSubmit(t *testing.T) {
 	ownerType := models.MovableOwnerType("private")
 	storage := models.StorageLocation("museum")
 	category := "III"
+	woreda := "Amir-Nur"
+	kebele := "01"
 
 	record := &models.MovableRecord{
 		NameAmharic:       "የሀረሪ ስሜት",
 		Category:          &category,
+		Woreda:            &woreda,
+		Kebele:            &kebele,
 		OwnerType:         &ownerType,
 		StorageLocation:   &storage,
 		Materials:         []string{"gold"},
@@ -34,6 +38,12 @@ func TestValidateForSubmit(t *testing.T) {
 	if err := validateForSubmit(record); err != nil {
 		t.Fatalf("expected valid record, got %v", err)
 	}
+
+	record.Woreda = nil
+	if err := validateForSubmit(record); err == nil {
+		t.Fatal("expected validation error for missing woreda")
+	}
+	record.Woreda = &woreda
 
 	record.Materials = nil
 	if err := validateForSubmit(record); err == nil {
@@ -49,7 +59,7 @@ func TestUpdateForbiddenForSupervisor(t *testing.T) {
 			Status:      models.StatusDraft,
 		},
 	}
-	svc := NewService(repo, nil, nil)
+	svc := NewService(repo, nil, nil, nil)
 
 	_, err := svc.Update(t.Context(), repo.record.ID, uuid.New(), models.RoleSupervisor, models.MovableRecordInput{})
 	if err != ErrForbidden {

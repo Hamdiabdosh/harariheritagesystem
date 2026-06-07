@@ -1,0 +1,222 @@
+{
+  "app": {
+    "name": "Qirs Mezgeb",
+    "subtitle": "Harari Heritage Registration System"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "signingIn": "Signing in...",
+    "invalidCredentials": "Invalid email or password",
+    "loginTitle": "Sign in to your account",
+    "loginSubtitle": "Access the heritage registry"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "myRecords": "My Records",
+    "allRecords": "All Records",
+    "pendingReview": "Pending Review",
+    "reviewed": "Reviewed",
+    "users": "Users",
+    "reports": "Reports",
+    "newImmovable": "New Immovable Asset",
+    "newMovable": "New Movable Asset"
+  },
+  "roles": {
+    "registrar": "Registrar",
+    "supervisor": "Supervisor",
+    "manager": "Manager"
+  },
+  "status": {
+    "draft": "Draft",
+    "pending_review": "Pending Review",
+    "under_review": "Under Review",
+    "returned": "Returned",
+    "approved": "Approved"
+  },
+  "recordType": {
+    "immovable": "Immovable",
+    "movable": "Movable"
+  },
+  "dashboard": {
+    "totalImmovable": "Total Immovable Assets",
+    "totalMovable": "Total Movable Assets",
+    "totalRecords": "Total Records",
+    "byStatus": "By Status",
+    "loadError": "Could not load dashboard statistics"
+  },
+  "records": {
+    "mySubtitle": "Records you have created",
+    "emptyTitle": "No records yet",
+    "emptyDescription": "Create a new immovable or movable asset to get started.",
+    "loadError": "Could not load records",
+    "pagination": "Showing {{shown}} of {{total}} · page {{page}} / {{pages}}"
+  },
+  "filters": {
+    "searchPlaceholder": "Search by name or ID...",
+    "allTypes": "All types",
+    "allStatuses": "All statuses",
+    "woreda": "Woreda",
+    "clear": "Clear"
+  },
+  "common": {
+    "loading": "Loading...",
+    "empty": "Nothing found",
+    "language": "Language",
+    "amharic": "አማርኛ",
+    "english": "English",
+    "unauthorized": "You don't have permission to view this page",
+    "backToHome": "Back to dashboard",
+    "retry": "Retry",
+    "prev": "Previous",
+    "next": "Next",
+    "cancel": "Cancel",
+    "save": "Save",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "immovable": {
+    "title": "Immovable Heritage Asset",
+    "subtitle": "Fill in all required sections. You can save a draft and continue later."
+  },
+  "movable": {
+    "title": "Movable Heritage Asset",
+    "subtitle": "Fill in all required sections. You can save a draft and continue later."
+  },
+  "history": {
+    "title": "Status History",
+    "empty": "No status changes recorded yet."
+  },
+  "comments": {
+    "title": "Comments",
+    "empty": "No comments yet.",
+    "add": "Add the first comment below.",
+    "placeholder": "Write your comment...",
+    "submit": "Add Comment",
+    "error": "Failed to add comment.",
+    "authorFallback": "User"
+  },
+  "detail": {
+    "tabs": {
+      "details": "Details",
+      "history": "History",
+      "comments": "Comments",
+      "photos": "Photos"
+    },
+    "backToRecords": "My Records"
+  },
+  "supervisor": {
+    "pendingSubtitle": "Records waiting for your review",
+    "allSubtitle": "All heritage records across all registrars",
+    "approveSuccess": "Record approved and moved to final review",
+    "returnSuccess": "Record returned to registrar",
+    "actionBar": "Review Actions",
+    "pendingCta": "Go to Pending Queue"
+  },
+  "manager": {
+    "allSubtitle": "All heritage records — full access",
+    "reviewedSubtitle": "Records reviewed by supervisor, awaiting your final decision",
+    "usersSubtitle": "Manage registrar and supervisor accounts",
+    "approveSuccess": "Record fully approved and locked",
+    "returnSuccess": "Record returned to supervisor for revision",
+    "finalReviewCta": "Go to Final Review Queue"
+  },
+  "actions": {
+    "approve": "Approve",
+    "returnToRegistrar": "Return to Registrar",
+    "returnToSupervisor": "Return to Supervisor",
+    "finalApprove": "Final Approve",
+    "downloadPdf": "Download PDF",
+    "viewDetail": "View Detail"
+  },
+  "users": {
+    "newUser": "New User",
+    "fullName": "Full Name",
+    "email": "Email",
+    "password": "Password",
+    "role": "Role",
+    "language": "Language",
+    "isActive": "Active",
+    "actions": "Actions",
+    "createTitle": "Create New User",
+    "editTitle": "Edit User",
+    "confirmDeactivate": "Deactivate User",
+    "deactivateWarning": "This user will immediately lose access.",
+    "deactivateBody": "Deactivate {{name}}? They will lose access immediately.",
+    "emailExists": "A user with this email already exists.",
+    "filterRole": "Filter by role",
+    "filterAll": "All roles",
+    "active": "Active",
+    "inactive": "Inactive",
+    "allUsers": "All users",
+    "requiredName": "Full name is required.",
+    "nameTooLong": "Name must be 100 characters or fewer.",
+    "invalidEmail": "Enter a valid email address.",
+    "passwordTooShort": "Password must be at least 8 characters.",
+    "requiredRole": "Role is required."
+  },
+  "reports": {
+    "title": "Reports & Export",
+    "exportSection": "Export to CSV",
+    "exportButton": "Download CSV",
+    "exporting": "Exporting...",
+    "statsSection": "Summary Statistics",
+    "totalRecords": "Total Records",
+    "filterType": "Record type",
+    "filterStatus": "Status",
+    "filterWoreda": "Woreda",
+    "filterDateFrom": "From date",
+    "filterDateTo": "To date"
+  },
+  "toast": {
+    "approveSuccess": "Record approved successfully",
+    "returnSuccess": "Record returned successfully",
+    "finalApproveSuccess": "Record fully approved",
+    "createUserSuccess": "User created successfully",
+    "updateUserSuccess": "User updated successfully",
+    "deactivateSuccess": "User deactivated",
+    "error": "Action failed — please try again"
+  },
+  "modal": {
+    "returnTitle": "Return Record",
+    "returnTitleAm": "መዝገቡን መለስ",
+    "reasonLabel": "Reason for return (required)",
+    "reasonLabelAm": "የመልስ ምክንያት",
+    "cancel": "Cancel",
+    "confirm": "Confirm Return",
+    "reasonRequired": "Return reason is required.",
+    "failed": "Return failed."
+  },
+  "forms": {
+    "saveDraft": "Save draft",
+    "submitForReview": "Submit for review",
+    "comingSoon": "This form will be available in the next prompt.",
+    "submitMissing": "Complete these required fields before submitting: {{fields}}",
+    "required": {
+      "nameAmharic": "Name (Amharic) is required.",
+      "location": "Woreda and Kebele are required."
+    },
+    "fields": {
+      "name_amharic": "Name (Amharic)",
+      "category": "Category",
+      "woreda": "Woreda",
+      "kebele": "Kebele",
+      "current_use": "Current Use",
+      "owner_type": "Owner Type",
+      "construction_period": "Construction Period",
+      "age_method": "Age Method",
+      "storage_location": "Storage Location",
+      "materials": "Materials"
+    }
+  },
+  "photos": {
+    "title": "Photos",
+    "upload": "Upload",
+    "count": "{{n}} photo(s)",
+    "empty": "No photos yet — upload reference images of the asset.",
+    "tooLarge": "{{name}} exceeds 10 MB and was skipped."
+  }
+}

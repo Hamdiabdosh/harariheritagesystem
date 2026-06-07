@@ -31,14 +31,19 @@ type HistoryLister interface {
 	ListByRecord(ctx context.Context, recordType models.RecordType, recordID uuid.UUID) ([]models.StatusHistoryEntry, error)
 }
 
+type CommentLister interface {
+	ListComments(ctx context.Context, recordType models.RecordType, recordID uuid.UUID) ([]models.RecordComment, error)
+}
+
 type Service struct {
 	repo          RepositoryInterface
 	photoLister   PhotoLister
 	historyLister HistoryLister
+	commentLister CommentLister
 }
 
-func NewService(repo RepositoryInterface, photoLister PhotoLister, historyLister HistoryLister) *Service {
-	return &Service{repo: repo, photoLister: photoLister, historyLister: historyLister}
+func NewService(repo RepositoryInterface, photoLister PhotoLister, historyLister HistoryLister, commentLister CommentLister) *Service {
+	return &Service{repo: repo, photoLister: photoLister, historyLister: historyLister, commentLister: commentLister}
 }
 
 func (s *Service) Create(ctx context.Context, registrarID uuid.UUID, input models.ImmovableRecordInput) (*CreateResult, error) {
@@ -68,39 +73,42 @@ func (s *Service) GetByID(ctx context.Context, id, userID uuid.UUID, role models
 	return &RecordDetail{
 		Record:   *record,
 		Photos:   listPhotos(ctx, s.photoLister, models.RecordTypeImmovable, id),
-		Comments: []any{},
+		Comments: listComments(ctx, s.commentLister, models.RecordTypeImmovable, id),
 		History:  listHistory(ctx, s.historyLister, models.RecordTypeImmovable, id),
 	}, nil
 }
 
-func listPhotos(ctx context.Context, lister PhotoLister, recordType models.RecordType, recordID uuid.UUID) []any {
+func listPhotos(ctx context.Context, lister PhotoLister, recordType models.RecordType, recordID uuid.UUID) []models.RecordPhoto {
 	if lister == nil {
-		return []any{}
+		return []models.RecordPhoto{}
 	}
 	photos, err := lister.ListByRecord(ctx, recordType, recordID)
 	if err != nil {
-		return []any{}
+		return []models.RecordPhoto{}
 	}
-	items := make([]any, len(photos))
-	for i := range photos {
-		items[i] = photos[i]
-	}
-	return items
+	return photos
 }
 
-func listHistory(ctx context.Context, lister HistoryLister, recordType models.RecordType, recordID uuid.UUID) []any {
+func listHistory(ctx context.Context, lister HistoryLister, recordType models.RecordType, recordID uuid.UUID) []models.StatusHistoryEntry {
 	if lister == nil {
-		return []any{}
+		return []models.StatusHistoryEntry{}
 	}
 	history, err := lister.ListByRecord(ctx, recordType, recordID)
 	if err != nil {
-		return []any{}
+		return []models.StatusHistoryEntry{}
 	}
-	items := make([]any, len(history))
-	for i := range history {
-		items[i] = history[i]
+	return history
+}
+
+func listComments(ctx context.Context, lister CommentLister, recordType models.RecordType, recordID uuid.UUID) []models.RecordComment {
+	if lister == nil {
+		return []models.RecordComment{}
 	}
-	return items
+	comments, err := lister.ListComments(ctx, recordType, recordID)
+	if err != nil {
+		return []models.RecordComment{}
+	}
+	return comments
 }
 
 func (s *Service) List(ctx context.Context, filters ListFilters, userID uuid.UUID, role models.Role) (*PaginatedRecords, error) {

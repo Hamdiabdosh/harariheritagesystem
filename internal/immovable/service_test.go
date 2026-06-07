@@ -65,7 +65,7 @@ func TestUpdateForbiddenForSupervisor(t *testing.T) {
 			Status:      models.StatusDraft,
 		},
 	}
-	svc := NewService(repo, nil, nil)
+	svc := NewService(repo, nil, nil, nil)
 
 	_, err := svc.Update(t.Context(), repo.record.ID, uuid.New(), models.RoleSupervisor, models.ImmovableRecordInput{})
 	if err != ErrForbidden {

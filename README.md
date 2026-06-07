@@ -1,6 +1,43 @@
-# Qirs Mezgeb API
+# Qirs Mezgeb
 
-Backend REST API for the Harari Heritage Registry System (ቅርስ መዝገብ).
+Heritage Registry System (ቅርስ መዝገብ) — Go API + React frontend.
+
+- **Backend API:** this README
+- **Frontend app:** [frontend/README.md](frontend/README.md)
+- **API contract:** [API.md](API.md)
+
+## Run locally (API + frontend)
+
+You need **two terminals**. The API uses port **8080**; the frontend dev server uses **5173** (do not run both on 8080).
+
+**Terminal 1 — database + API**
+
+```bash
+docker compose up -d          # Postgres on localhost:5434
+cp .env.example .env          # once, at repo root
+go run ./cmd/server           # listens on http://localhost:8080
+```
+
+**Terminal 2 — frontend**
+
+```bash
+cd frontend
+cp .env.example .env          # once; sets VITE_API_URL=http://localhost:8080/api/v1
+bun install
+bun run dev                   # opens http://localhost:5173
+```
+
+**Login:** open http://localhost:5173/login
+
+| Email | Password |
+|-------|----------|
+| `admin@qirsmezgeb.gov.et` | `Admin1234` |
+
+If login fails with a network error, check that `go run ./cmd/server` is running and that nothing else blocked port 8080.
+
+## Backend (API)
+
+Backend REST API for the Harari Heritage Registry System.
 
 ## Prerequisites
 
@@ -55,13 +92,15 @@ Expected response when the database is reachable:
 { "status": "ok", "db": "connected" }
 ```
 
-Migrations run automatically on startup. The seed migration creates a default manager account:
+Migrations run automatically on startup. Seed migrations create one test account per actor role:
 
-| Email | Password |
-|-------|----------|
-| `admin@qirsmezgeb.gov.et` | `Admin1234` |
+| Role | Email | Password |
+|------|-------|----------|
+| Manager | `admin@qirsmezgeb.gov.et` | `Admin1234` |
+| Supervisor | `supervisor@qirsmezgeb.gov.et` | `Test1234` |
+| Registrar | `registrar@qirsmezgeb.gov.et` | `Test1234` |
 
-Change this password before deploying to production.
+Change these passwords before deploying to production.
 
 ## Auth Endpoints
 
@@ -123,15 +162,17 @@ List query params: `status`, `woreda`, `search`, `page`, `limit`, `date_from`, `
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| PUT | `/api/v1/records/:type/:id/review-approve` | Supervisor | Move `pending_review` → `under_review` (optional comment) |
-| PUT | `/api/v1/records/:type/:id/review-return` | Supervisor | Move `pending_review` → `returned` (comment required) |
-| PUT | `/api/v1/records/:type/:id/final-approve` | Manager | Move `under_review` → `approved` (optional comment) |
-| PUT | `/api/v1/records/:type/:id/final-return` | Manager | Move `under_review` → `pending_review` (comment required) |
-| POST | `/api/v1/records/:type/:id/comments` | Supervisor, Manager | Add a comment |
+| PUT | `/api/v1/records/:type/:id/review-approve` | Supervisor | Move `pending_review` → `under_review` (optional `comment_text`) |
+| PUT | `/api/v1/records/:type/:id/review-return` | Supervisor | Move `pending_review` → `returned` (`comment_text` required) |
+| PUT | `/api/v1/records/:type/:id/final-approve` | Manager | Move `under_review` → `approved` (optional `comment_text`) |
+| PUT | `/api/v1/records/:type/:id/final-return` | Manager | Move `under_review` → `pending_review` (`comment_text` required) |
+| POST | `/api/v1/records/:type/:id/comments` | Supervisor, Manager | Add a comment (`comment_text`) |
 | GET | `/api/v1/records/:type/:id/comments` | All roles | List comments (registrar: own records only) |
 | GET | `/api/v1/records/:type/:id/history` | All roles | List status history (registrar: own records only) |
 
-Return actions return **422** if `comment` is empty. Wrong status returns **409**.
+Return actions return **422** if `comment_text` is empty (legacy `comment` also accepted on return/approve). Wrong status returns **409**.
+
+Record detail responses include populated `comments` (with `author_name`) and `history` (with `changed_by_name`).
 
 ## Status Audit Log
 
@@ -204,4 +245,4 @@ go build -o bin/server ./cmd/server
 - **F-01**: React frontend scaffold + routing
 - **F-02**: Auth pages and JWT storage
 
-See `CURSOR.md` and `SYSTEM_DESIGN.md` for full architecture rules.
+See `API.md`, `CURSOR.md`, and `SYSTEM_DESIGN.md` for full architecture rules.

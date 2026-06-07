@@ -42,10 +42,18 @@ func (r *Repository) CreateComment(ctx context.Context, comment *models.RecordCo
 
 func (r *Repository) ListComments(ctx context.Context, recordType models.RecordType, recordID uuid.UUID) ([]models.RecordComment, error) {
 	const query = `
-		SELECT id, record_type, record_id, author_id, comment_text, created_at
-		FROM record_comments
-		WHERE record_type = $1 AND record_id = $2
-		ORDER BY created_at ASC
+		SELECT
+			c.id,
+			c.record_type,
+			c.record_id,
+			c.author_id,
+			u.full_name,
+			c.comment_text,
+			c.created_at
+		FROM record_comments c
+		INNER JOIN users u ON u.id = c.author_id
+		WHERE c.record_type = $1 AND c.record_id = $2
+		ORDER BY c.created_at ASC
 	`
 
 	rows, err := r.pool.Query(ctx, query, recordType, recordID)
@@ -62,6 +70,7 @@ func (r *Repository) ListComments(ctx context.Context, recordType models.RecordT
 			&comment.RecordType,
 			&comment.RecordID,
 			&comment.AuthorID,
+			&comment.AuthorName,
 			&comment.CommentText,
 			&comment.CreatedAt,
 		); err != nil {

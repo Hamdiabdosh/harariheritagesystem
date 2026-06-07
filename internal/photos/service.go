@@ -101,25 +101,22 @@ func (s *Service) Upload(ctx context.Context, recordType models.RecordType, reco
 	}
 
 	photoID := uuid.New()
-	relativePath := filepath.ToSlash(filepath.Join(string(recordType), recordID.String(), photoID.String()+ext))
-	absolutePath := filepath.Join(s.mediaPath, relativePath)
-
-	if err := os.MkdirAll(filepath.Dir(absolutePath), 0o755); err != nil {
-		return nil, fmt.Errorf("create photo directory: %w", err)
-	}
+	storedName := photoID.String() + ext
+	relativePath := filepath.ToSlash(storedName)
+	absolutePath := ResolveAbsolutePath(s.mediaPath, relativePath)
 
 	if err := os.WriteFile(absolutePath, content, 0o644); err != nil {
 		return nil, fmt.Errorf("write photo file: %w", err)
 	}
 
-	fileName := fileHeader.Filename
+	originalName := fileHeader.Filename
 	size := len(content)
 	photo := &models.RecordPhoto{
 		ID:            photoID,
 		RecordType:    recordType,
 		RecordID:      recordID,
 		FilePath:      relativePath,
-		FileName:      &fileName,
+		FileName:      &originalName,
 		FileSizeBytes: &size,
 		UploadedBy:    userID,
 	}
@@ -162,7 +159,7 @@ func (s *Service) Delete(ctx context.Context, recordType models.RecordType, reco
 		return err
 	}
 
-	absolutePath := filepath.Join(s.mediaPath, filepath.FromSlash(photo.FilePath))
+	absolutePath := ResolveAbsolutePath(s.mediaPath, photo.FilePath)
 	_ = os.Remove(absolutePath)
 
 	return nil

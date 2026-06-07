@@ -49,7 +49,7 @@ func (u *User) IsUsable() bool {
 
 type UserPublic struct {
 	ID       uuid.UUID `json:"id"`
-	FullName string    `json:"name"`
+	FullName string    `json:"full_name"`
 	Email    string    `json:"email"`
 	Role     Role      `json:"role"`
 	Language Language  `json:"language"`

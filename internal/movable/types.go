@@ -28,10 +28,10 @@ type PaginatedRecords struct {
 }
 
 type RecordDetail struct {
-	Record   models.MovableRecord `json:"record"`
-	Photos   []any                `json:"photos"`
-	Comments []any                `json:"comments"`
-	History  []any                `json:"history"`
+	Record   models.MovableRecord       `json:"record"`
+	Photos   []models.RecordPhoto       `json:"photos"`
+	Comments []models.RecordComment     `json:"comments"`
+	History  []models.StatusHistoryEntry `json:"history"`
 }
 
 type CreateResult struct {

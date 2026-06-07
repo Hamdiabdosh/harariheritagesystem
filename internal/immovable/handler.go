@@ -186,7 +186,7 @@ func respondServiceError(c *gin.Context, err error) {
 	var validationErr *ValidationError
 	switch {
 	case errors.As(err, &validationErr):
-		middleware.RespondError(c, http.StatusUnprocessableEntity, "Validation failed")
+		middleware.RespondValidationError(c, validationErr.Fields)
 	case errors.Is(err, ErrRecordNotFound):
 		middleware.RespondError(c, http.StatusNotFound, "Record not found")
 	case errors.Is(err, ErrForbidden):

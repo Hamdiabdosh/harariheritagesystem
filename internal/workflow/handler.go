@@ -19,14 +19,6 @@ func NewHandler(service *Service) *Handler {
 	return &Handler{service: service}
 }
 
-type optionalCommentRequest struct {
-	Comment *string `json:"comment"`
-}
-
-type requiredCommentRequest struct {
-	Comment string `json:"comment" binding:"required"`
-}
-
 type addCommentRequest struct {
 	CommentText string `json:"comment_text" binding:"required"`
 }
@@ -40,7 +32,7 @@ func (h *Handler) ReviewApprove(c *gin.Context) {
 	var req optionalCommentRequest
 	_ = c.ShouldBindJSON(&req)
 
-	result, err := h.service.ReviewApprove(c.Request.Context(), recordType, recordID, actor.ID, req.Comment)
+	result, err := h.service.ReviewApprove(c.Request.Context(), recordType, recordID, actor.ID, req.value())
 	if err != nil {
 		respondServiceError(c, err)
 		return
@@ -61,7 +53,13 @@ func (h *Handler) ReviewReturn(c *gin.Context) {
 		return
 	}
 
-	result, err := h.service.ReviewReturn(c.Request.Context(), recordType, recordID, actor.ID, req.Comment)
+	comment, ok := req.value()
+	if !ok {
+		middleware.RespondError(c, http.StatusUnprocessableEntity, "Comment is required")
+		return
+	}
+
+	result, err := h.service.ReviewReturn(c.Request.Context(), recordType, recordID, actor.ID, comment)
 	if err != nil {
 		respondServiceError(c, err)
 		return
@@ -79,7 +77,7 @@ func (h *Handler) FinalApprove(c *gin.Context) {
 	var req optionalCommentRequest
 	_ = c.ShouldBindJSON(&req)
 
-	result, err := h.service.FinalApprove(c.Request.Context(), recordType, recordID, actor.ID, req.Comment)
+	result, err := h.service.FinalApprove(c.Request.Context(), recordType, recordID, actor.ID, req.value())
 	if err != nil {
 		respondServiceError(c, err)
 		return
@@ -100,7 +98,13 @@ func (h *Handler) FinalReturn(c *gin.Context) {
 		return
 	}
 
-	result, err := h.service.FinalReturn(c.Request.Context(), recordType, recordID, actor.ID, req.Comment)
+	comment, ok := req.value()
+	if !ok {
+		middleware.RespondError(c, http.StatusUnprocessableEntity, "Comment is required")
+		return
+	}
+
+	result, err := h.service.FinalReturn(c.Request.Context(), recordType, recordID, actor.ID, comment)
 	if err != nil {
 		respondServiceError(c, err)
 		return

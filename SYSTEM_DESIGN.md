@@ -868,7 +868,7 @@ POST /records/immovable
 GET /records/immovable
   Auth: All roles (filtered by role)
   Query: ?status=&woreda=&search=&page=1&limit=20&date_from=&date_to=
-  Response: { data: { records: [...], total, page } }
+  Response: { data: { items: [...], total, page, limit, total_pages } }
 
 GET /records/immovable/:id
   Auth: All roles (registrar: own only)
@@ -884,6 +884,7 @@ PUT /records/immovable/:id/submit
   Auth: Registrar (own draft/returned records only)
   Response: { data: { status: "pending_review" } }
   Errors:   422 validation failed (missing required fields)
+  Note:     Same endpoint used to resubmit returned records (no separate /resubmit)
 
 ── MOVABLE RECORDS ──────────────────────────────────────────────
 
@@ -897,25 +898,25 @@ PUT  /records/movable/:id/submit  (same pattern)
 
 PUT /records/:type/:id/review-approve
   Auth: Supervisor only
-  Request:  { comment? }
+  Request:  { comment_text? }  (legacy "comment" also accepted)
   Response: { data: { status: "under_review" } }
   Errors:   403 not supervisor | 409 wrong status
 
 PUT /records/:type/:id/review-return
   Auth: Supervisor only
-  Request:  { comment: required }
+  Request:  { comment_text: required }  (legacy "comment" also accepted)
   Response: { data: { status: "returned" } }
   Errors:   422 comment required
 
 PUT /records/:type/:id/final-approve
   Auth: Manager only
-  Request:  { comment? }
+  Request:  { comment_text? }  (legacy "comment" also accepted)
   Response: { data: { status: "approved", approved_at } }
   Errors:   403 not manager | 409 wrong status
 
 PUT /records/:type/:id/final-return
   Auth: Manager only
-  Request:  { comment: required }
+  Request:  { comment_text: required }  (legacy "comment" also accepted)
   Response: { data: { status: "pending_review" } }
 
 POST /records/:type/:id/comments
@@ -945,6 +946,11 @@ DELETE /records/:type/:id/photos/:photo_id
   Response: { message: "Photo deleted" }
 
 ── DASHBOARD & SEARCH ───────────────────────────────────────────
+
+GET /records
+  Auth: All roles (role-filtered)
+  Query: ?type=immovable|movable&status=&woreda=&kebele=&search=&page=1&limit=20&date_from=&date_to=
+  Response: { data: { items: [RecordSummary], total, page, limit, total_pages } }
 
 GET /dashboard/stats
   Auth: All roles (role-filtered)

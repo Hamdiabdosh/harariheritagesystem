@@ -51,3 +51,12 @@ func RespondSuccess(c *gin.Context, data any, message string) {
 func RespondError(c *gin.Context, code int, message string) {
 	respondError(c, code, message)
 }
+
+func RespondValidationError(c *gin.Context, fields map[string]string) {
+	c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{
+		"success": false,
+		"error":   "Validation failed",
+		"code":    http.StatusUnprocessableEntity,
+		"fields":  fields,
+	})
+}

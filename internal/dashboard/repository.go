@@ -56,8 +56,8 @@ func (r *Repository) GetStats(ctx context.Context, userID uuid.UUID, role models
 }
 
 func (r *Repository) countByStatus(ctx context.Context, userID uuid.UUID, role models.Role) (StatusCounts, error) {
-	immovableWhere, immovableArgs := buildTableFilters("immovable_records", userID, role, ListFilters{})
-	movableWhere, movableArgs := buildTableFilters("movable_records", userID, role, ListFilters{})
+	immovableWhere, immovableArgs, nextIdx := buildTableFiltersIndexed("immovable_records", userID, role, ListFilters{}, 1)
+	movableWhere, movableArgs, _ := buildTableFiltersIndexed("movable_records", userID, role, ListFilters{}, nextIdx)
 
 	query := fmt.Sprintf(`
 		SELECT status, COUNT(*)::int
@@ -116,8 +116,8 @@ func (r *Repository) pendingMyAction(ctx context.Context, userID uuid.UUID, role
 	}
 
 	filters := ListFilters{Status: status}
-	immovableWhere, immovableArgs := buildTableFilters("immovable_records", userID, role, filters)
-	movableWhere, movableArgs := buildTableFilters("movable_records", userID, role, filters)
+	immovableWhere, immovableArgs, nextIdx := buildTableFiltersIndexed("immovable_records", userID, role, filters, 1)
+	movableWhere, movableArgs, _ := buildTableFiltersIndexed("movable_records", userID, role, filters, nextIdx)
 
 	query := fmt.Sprintf(`
 		SELECT COUNT(*)::int

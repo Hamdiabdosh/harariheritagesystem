@@ -76,7 +76,8 @@
     "cancel": "Cancel",
     "save": "Save",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "toggleSidebar": "Toggle sidebar (Ctrl+B)"
   },
   "immovable": {
     "title": "Immovable Heritage Asset",

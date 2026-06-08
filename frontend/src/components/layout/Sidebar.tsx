@@ -13,6 +13,7 @@ import type { Role } from "@/types";
 import { cn } from "@/lib/utils";
 import { AppLogo } from "@/components/common/AppLogo";
 import { getDashboardStats } from "@/api/dashboard";
+import { useSidebarStore } from "@/stores/sidebarStore";
 
 type StatusCountKey =
   | "pending_review"
@@ -74,6 +75,7 @@ const NAV: NavItem[] = [
 
 export function Sidebar({ role }: { role: Role }) {
   const { t } = useTranslation();
+  const open = useSidebarStore((s) => s.open);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   const { data: stats } = useQuery({
@@ -86,7 +88,12 @@ export function Sidebar({ role }: { role: Role }) {
   const items = NAV.filter((i) => i.roles.includes(role));
 
   return (
-    <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-sidebar md:flex">
+    <aside
+      className={cn(
+        "fixed inset-y-0 left-0 z-40 hidden h-svh w-64 flex-col border-r border-border bg-sidebar transition-transform duration-200 ease-in-out md:flex",
+        open ? "translate-x-0" : "-translate-x-full",
+      )}
+    >
       <div className="flex h-16 items-center gap-2.5 border-b border-border px-4">
         <AppLogo size="md" />
         <div className="leading-tight">
@@ -99,7 +106,7 @@ export function Sidebar({ role }: { role: Role }) {
         </div>
       </div>
 
-      <nav className="flex-1 space-y-1 p-3">
+      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
         {items.map((item) => {
           const active = pathname === item.to || pathname.startsWith(item.to + "/");
           const Icon = item.icon;

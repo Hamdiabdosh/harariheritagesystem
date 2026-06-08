@@ -76,7 +76,8 @@
     "cancel": "ሰርዝ",
     "save": "አስቀምጥ",
     "yes": "አዎ",
-    "no": "አይ"
+    "no": "አይ",
+    "toggleSidebar": "የጎን ምናሌ አሳይ/ደብቅ (Ctrl+B)"
   },
   "immovable": {
     "title": "የማይንቀሳቀስ ቅርስ",

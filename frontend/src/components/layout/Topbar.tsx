@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { LogOut, Languages, Bell, RotateCcw, ListChecks, Eye } from "lucide-react";
+import { LogOut, Languages, Bell, RotateCcw, ListChecks, Eye, PanelLeft } from "lucide-react";
 import type { RecordStatus, UserPublic, Language } from "@/types";
 import { useAuthStore } from "@/stores/authStore";
 import { useLanguageStore } from "@/stores/languageStore";
+import { useSidebarStore } from "@/stores/sidebarStore";
 import { logout as apiLogout } from "@/api/auth";
 import { updateMyLanguage } from "@/api/users";
 import { getDashboardStats } from "@/api/dashboard";
@@ -57,6 +58,7 @@ export function Topbar({ user }: { user: UserPublic }) {
   const clearSession = useAuthStore((s) => s.logout);
   const language = useLanguageStore((s) => s.language);
   const setLanguage = useLanguageStore((s) => s.setLanguage);
+  const toggleSidebar = useSidebarStore((s) => s.toggle);
 
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -113,7 +115,15 @@ export function Topbar({ user }: { user: UserPublic }) {
         <div className="font-amharic text-sm font-bold">{t("app.name")}</div>
       </div>
 
-      <div className="hidden md:block" />
+      <button
+        type="button"
+        onClick={toggleSidebar}
+        className="hidden h-9 w-9 items-center justify-center rounded-md border border-border bg-background text-foreground transition-colors hover:bg-accent md:inline-flex"
+        aria-label={t("common.toggleSidebar")}
+        title={t("common.toggleSidebar")}
+      >
+        <PanelLeft className="h-4 w-4" />
+      </button>
 
       <div className="flex items-center gap-3">
         {statusFilter && (

@@ -1,0 +1,14 @@
+# Local development only — adds host port bindings.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+services:
+  postgres:
+    ports:
+      - "5434:5432"
+
+  api:
+    ports:
+      - "8080:8080"
+
+  frontend:
+    ports:
+      - "3000:3000"

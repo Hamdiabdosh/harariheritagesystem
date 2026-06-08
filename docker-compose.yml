@@ -8,8 +8,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-qirsmezgeb}
     volumes:
       - qirsmezgeb_pgdata:/var/lib/postgresql/data
-    ports:
-      - "5434:5432"
+    expose:
+      - "5432"
     healthcheck:
       test:
         [
@@ -37,8 +37,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
 
   frontend:
     build:
@@ -54,8 +54,8 @@ services:
     depends_on:
       api:
         condition: service_healthy
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
 
 volumes:
   qirsmezgeb_pgdata:

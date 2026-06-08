@@ -52,10 +52,12 @@ Runs Postgres, API, and frontend together:
 
 ```bash
 cp .env.docker.example .env   # set JWT_SECRET, JWT_REFRESH_SECRET, and URLs
-docker compose up -d --build
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 ```
 
 Open http://localhost:3000/login. API: http://localhost:8080/health
+
+Production/Coolify uses `docker-compose.yml` without host port bindings — Coolify's proxy routes traffic internally.
 
 ### Coolify deployment
 
@@ -76,7 +78,7 @@ Open http://localhost:3000/login. API: http://localhost:8080/health
 Port `5432` is often already in use by other projects. This repo includes a dedicated Postgres on **5434**:
 
 ```bash
-docker compose up -d postgres
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d postgres
 cp .env.example .env
 go mod tidy
 go run ./cmd/server

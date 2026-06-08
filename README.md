@@ -55,26 +55,27 @@ cp .env.docker.example .env   # set JWT_SECRET, JWT_REFRESH_SECRET, and URLs
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 ```
 
-Open http://localhost:3000/login. API: http://localhost:8080/health
+Open http://localhost:3000/login (direct), or http://localhost:8081/login (via Caddy, same as production routing).
 
-Production/Coolify uses `docker-compose.yml` without host port bindings — Coolify's proxy routes traffic internally.
+Production/Coolify uses `docker-compose.yml` without host port bindings — a **Caddy** container routes one public domain to frontend + API.
 
-### Coolify deployment
+### Coolify deployment (single domain)
+
+Uses one domain, e.g. `https://heritage.raafat.site` — no API subdomain required.
 
 1. Deploy using the repo `docker-compose.yml` (Docker Compose build pack).
-2. In **Environment Variables**, set at minimum:
-   - `JWT_SECRET`, `JWT_REFRESH_SECRET` (strong random values)
-   - `POSTGRES_PASSWORD` (strong value)
-   - `VITE_API_URL` — public API URL the browser will call, e.g. `https://api.heritage.raafat.site/api/v1`
-   - `ALLOWED_ORIGINS` — public frontend URL, e.g. `https://heritage.raafat.site`
-   - Do **not** set `DB_URL` in Coolify — the API builds it from `POSTGRES_*` vars automatically.
-   - If you change `POSTGRES_PASSWORD` after the first deploy, delete the Postgres volume in Coolify or keep the original password (Postgres ignores password changes on an existing data volume).
-3. In **Domains**, click each service separately (not just the project):
-   - **`frontend`** → `https://heritage.raafat.site`
-   - **`api`** → `https://api.heritage.raafat.site`
-4. Redeploy. Coolify uses `SERVICE_FQDN_FRONTEND_3000` / `SERVICE_FQDN_API_8080` from `docker-compose.yml` to wire Traefik to the right container.
+2. In **Environment Variables**, set **only**:
+   - `JWT_SECRET`, `JWT_REFRESH_SECRET`
+   - `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
+   - `VITE_API_URL=https://heritage.raafat.site/api/v1`
+   - `ALLOWED_ORIGINS=https://heritage.raafat.site`
+3. **Remove** from Coolify if present: `DB_URL`, `PORT`, `MEDIA_PATH`, `SERVICE_URL_*`, `SERVICE_FQDN_*` (Coolify fills `SERVICE_FQDN_CADDY_80` automatically).
+4. In **Domains**, assign `https://heritage.raafat.site` to the **`caddy`** service only (not api, not frontend).
+5. Redeploy.
 
-`VITE_API_URL` is baked in at **build time** — change it and redeploy if your API domain changes.
+Routing: `/` → frontend, `/api/v1/*` → API, `/media/*` → API.
+
+`VITE_API_URL` is baked in at **build time** — change it and redeploy if your domain changes.
 
 ### Option B — Docker Postgres only (native API dev)
 

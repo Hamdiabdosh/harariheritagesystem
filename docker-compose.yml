@@ -26,7 +26,6 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      SERVICE_FQDN_API_8080: ""
       PORT: 8080
       POSTGRES_USER: ${POSTGRES_USER:-qirsmezgeb}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-qirsmezgeb_dev}
@@ -59,7 +58,6 @@ services:
         VITE_API_URL: ${VITE_API_URL:-http://localhost:8080/api/v1}
     restart: unless-stopped
     environment:
-      SERVICE_FQDN_FRONTEND_3000: ""
       PORT: 3000
       HOST: 0.0.0.0
       NODE_ENV: production
@@ -74,6 +72,27 @@ services:
       retries: 6
     expose:
       - "3000"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      SERVICE_FQDN_CADDY_80: ""
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      api:
+        condition: service_healthy
+      frontend:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 5s
+      start_period: 15s
+      retries: 6
+    expose:
+      - "80"
 
 volumes:
   qirsmezgeb_pgdata:

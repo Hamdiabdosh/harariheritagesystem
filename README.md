@@ -69,9 +69,10 @@ Production/Coolify uses `docker-compose.yml` without host port bindings — Cool
    - `ALLOWED_ORIGINS` — public frontend URL, e.g. `https://heritage.raafat.site`
    - Do **not** set `DB_URL` in Coolify — the API builds it from `POSTGRES_*` vars automatically.
    - If you change `POSTGRES_PASSWORD` after the first deploy, delete the Postgres volume in Coolify or keep the original password (Postgres ignores password changes on an existing data volume).
-3. In **Domains**, assign your public URL to the **`frontend`** service.
-4. Optionally assign a subdomain (e.g. `api.your-domain.com`) to the **`api`** service.
-5. Redeploy.
+3. In **Domains**, click each service separately (not just the project):
+   - **`frontend`** → `https://heritage.raafat.site`
+   - **`api`** → `https://api.heritage.raafat.site`
+4. Redeploy. Coolify uses `SERVICE_FQDN_FRONTEND_3000` / `SERVICE_FQDN_API_8080` from `docker-compose.yml` to wire Traefik to the right container.
 
 `VITE_API_URL` is baked in at **build time** — change it and redeploy if your API domain changes.
 

@@ -26,6 +26,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
+      SERVICE_FQDN_API_8080: ""
       PORT: 8080
       POSTGRES_USER: ${POSTGRES_USER:-qirsmezgeb}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-qirsmezgeb_dev}
@@ -58,6 +59,7 @@ services:
         VITE_API_URL: ${VITE_API_URL:-http://localhost:8080/api/v1}
     restart: unless-stopped
     environment:
+      SERVICE_FQDN_FRONTEND_3000: ""
       PORT: 3000
       HOST: 0.0.0.0
       NODE_ENV: production

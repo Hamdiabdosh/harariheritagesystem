@@ -1,0 +1,11 @@
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+error.txt
+media/
+frontend/
+*.md
+STEP1_AUDIT_REPORT.md
+SYSTEM_DESIGN.md

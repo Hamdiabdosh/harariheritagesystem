@@ -46,18 +46,43 @@ Backend REST API for the Harari Heritage Registry System.
 
 ## Setup
 
-### Option A — Docker (recommended for local dev)
+### Option A — Docker Compose (full stack)
+
+Runs Postgres, API, and frontend together:
+
+```bash
+cp .env.docker.example .env   # set JWT_SECRET, JWT_REFRESH_SECRET, and URLs
+docker compose up -d --build
+```
+
+Open http://localhost:3000/login. API: http://localhost:8080/health
+
+### Coolify deployment
+
+1. Deploy using the repo `docker-compose.yml` (Docker Compose build pack).
+2. In **Environment Variables**, set at minimum:
+   - `JWT_SECRET`, `JWT_REFRESH_SECRET` (strong random values)
+   - `POSTGRES_PASSWORD` (strong value)
+   - `VITE_API_URL` — public API URL the browser will call, e.g. `https://api.your-domain.com/api/v1`
+   - `ALLOWED_ORIGINS` — public frontend URL, e.g. `https://your-domain.com`
+3. In **Domains**, assign your public URL to the **`frontend`** service.
+4. Optionally assign a subdomain (e.g. `api.your-domain.com`) to the **`api`** service.
+5. Redeploy.
+
+`VITE_API_URL` is baked in at **build time** — change it and redeploy if your API domain changes.
+
+### Option B — Docker Postgres only (native API dev)
 
 Port `5432` is often already in use by other projects. This repo includes a dedicated Postgres on **5434**:
 
 ```bash
-docker compose up -d
+docker compose up -d postgres
 cp .env.example .env
 go mod tidy
 go run ./cmd/server
 ```
 
-### Option B — Existing PostgreSQL
+### Option C — Existing PostgreSQL
 
 1. Copy the environment file and set `DB_URL` to your real credentials:
 

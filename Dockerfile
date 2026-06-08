@@ -18,7 +18,7 @@ WORKDIR /app
 
 COPY --from=builder /server .
 
-RUN adduser -D -u 1000 appuser && \
+RUN adduser -D appuser && \
     mkdir -p /app/media && \
     chown -R appuser:appuser /app
 

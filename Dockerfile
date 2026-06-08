@@ -12,21 +12,21 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /server ./cmd/server
 
 FROM alpine:3.21
 
-RUN apk add --no-cache ca-certificates wget
+RUN apk add --no-cache ca-certificates wget su-exec
 
 WORKDIR /app
 
 COPY --from=builder /server .
+COPY scripts/docker-api-entrypoint.sh /entrypoint.sh
 
-RUN adduser -D appuser && \
+RUN chmod +x /entrypoint.sh && \
+    adduser -D appuser && \
     mkdir -p /app/media && \
     chown -R appuser:appuser /app
 
-USER appuser
-
 EXPOSE 8080
 
-HEALTHCHECK --interval=10s --timeout=5s --start-period=15s --retries=5 \
-  CMD wget -q --spider http://localhost:8080/health || exit 1
+HEALTHCHECK --interval=10s --timeout=5s --start-period=60s --retries=6 \
+  CMD wget -q -O /dev/null http://127.0.0.1:8080/healthz || exit 1
 
-CMD ["./server"]
+ENTRYPOINT ["/entrypoint.sh"]

@@ -95,6 +95,9 @@ func setupRouter(cfg *config.Config, pool *pgxpool.Pool) *gin.Engine {
 	registerMediaRoutes(router, cfg.MediaPath)
 
 	router.GET("/health", healthHandler(pool))
+	router.GET("/healthz", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	})
 
 	authRepo := auth.NewRepository(pool)
 	authService := auth.NewService(authRepo, cfg.JWTSecret, cfg.JWTRefreshSecret)

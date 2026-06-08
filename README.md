@@ -65,8 +65,10 @@ Production/Coolify uses `docker-compose.yml` without host port bindings — Cool
 2. In **Environment Variables**, set at minimum:
    - `JWT_SECRET`, `JWT_REFRESH_SECRET` (strong random values)
    - `POSTGRES_PASSWORD` (strong value)
-   - `VITE_API_URL` — public API URL the browser will call, e.g. `https://api.your-domain.com/api/v1`
-   - `ALLOWED_ORIGINS` — public frontend URL, e.g. `https://your-domain.com`
+   - `VITE_API_URL` — public API URL the browser will call, e.g. `https://api.heritage.raafat.site/api/v1`
+   - `ALLOWED_ORIGINS` — public frontend URL, e.g. `https://heritage.raafat.site`
+   - Do **not** set `DB_URL` in Coolify — the API builds it from `POSTGRES_*` vars automatically.
+   - If you change `POSTGRES_PASSWORD` after the first deploy, delete the Postgres volume in Coolify or keep the original password (Postgres ignores password changes on an existing data volume).
 3. In **Domains**, assign your public URL to the **`frontend`** service.
 4. Optionally assign a subdomain (e.g. `api.your-domain.com`) to the **`api`** service.
 5. Redeploy.

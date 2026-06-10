@@ -1,6 +1,9 @@
 node_modules
 dist
+.output
 .nitro
+.tanstack
+.vinxi
 .git
 .gitignore
 .env

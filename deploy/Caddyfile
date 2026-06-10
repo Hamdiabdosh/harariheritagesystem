@@ -1,5 +1,5 @@
 # Single-domain entrypoint: one public URL for the whole app.
-# Coolify assigns heritage.raafat.site to the "caddy" service only.
+# Coolify: assign your domain to the "caddy" service only (port 80).
 :80 {
 	handle /api/* {
 		reverse_proxy api:8080

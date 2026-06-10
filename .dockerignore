@@ -3,9 +3,10 @@
 .env
 .env.*
 !.env.example
-error.txt
-media/
 frontend/
+deploy/
 *.md
 STEP1_AUDIT_REPORT.md
 SYSTEM_DESIGN.md
+deployment-*.txt
+error.txt

@@ -13,9 +13,9 @@ You need **two terminals**. The API uses port **8080**; the frontend dev server 
 **Terminal 1 — database + API**
 
 ```bash
-docker compose up -d          # Postgres on localhost:5434
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d postgres
 cp .env.example .env          # once, at repo root
-go run ./cmd/server           # listens on http://localhost:8080
+cd backend && go run ./cmd/server   # listens on http://localhost:8080
 ```
 
 **Terminal 2 — frontend**
@@ -33,7 +33,7 @@ bun run dev                   # opens http://localhost:5173
 |-------|----------|
 | `admin@qirsmezgeb.gov.et` | `Admin1234` |
 
-If login fails with a network error, check that `go run ./cmd/server` is running and that nothing else blocked port 8080.
+If login fails with a network error, check that `cd backend && go run ./cmd/server` is running and that nothing else blocked port 8080.
 
 ## Backend (API)
 
@@ -61,21 +61,16 @@ Production/Coolify uses `docker-compose.yml` without host port bindings — a **
 
 ### Coolify deployment (single domain)
 
-Uses one domain, e.g. `https://heritage.raafat.site` — no API subdomain required.
+Uses one domain, e.g. `https://heritage.example.com` — no API subdomain required.
 
-1. Deploy using the repo `docker-compose.yml` (Docker Compose build pack).
-2. In **Environment Variables**, set **only**:
-   - `JWT_SECRET`, `JWT_REFRESH_SECRET`
-   - `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
-   - `VITE_API_URL=https://heritage.raafat.site/api/v1`
-   - `ALLOWED_ORIGINS=https://heritage.raafat.site`
-3. **Remove** from Coolify if present: `DB_URL`, `PORT`, `MEDIA_PATH`, `SERVICE_URL_*`, `SERVICE_FQDN_*` (Coolify fills `SERVICE_FQDN_CADDY_80` automatically).
-4. In **Domains**, assign `https://heritage.raafat.site` to the **`caddy`** service only (not api, not frontend).
-5. Redeploy.
+Full guide: [deploy/COOLIFY.md](deploy/COOLIFY.md)
+
+1. Deploy using `docker-compose.yml` (Docker Compose build pack).
+2. Copy variables from [`.env.coolify.example`](.env.coolify.example) into Coolify **Environment Variables**.
+3. In **Domains**, assign your URL to the **`caddy`** service only (port 80).
+4. Redeploy after any `VITE_API_URL` change (frontend rebuild required).
 
 Routing: `/` → frontend, `/api/v1/*` → API, `/media/*` → API.
-
-`VITE_API_URL` is baked in at **build time** — change it and redeploy if your domain changes.
 
 ### Option B — Docker Postgres only (native API dev)
 
@@ -84,8 +79,7 @@ Port `5432` is often already in use by other projects. This repo includes a dedi
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d postgres
 cp .env.example .env
-go mod tidy
-go run ./cmd/server
+cd backend && go mod tidy && go run ./cmd/server
 ```
 
 ### Option C — Existing PostgreSQL
@@ -105,8 +99,7 @@ createdb qirsmezgeb
 3. Download dependencies and run the server:
 
 ```bash
-go mod tidy
-go run ./cmd/server
+cd backend && go mod tidy && go run ./cmd/server
 ```
 
 The server listens on `http://localhost:8080` by default.
@@ -238,23 +231,34 @@ Record detail (`GET .../immovable/:id` and `GET .../movable/:id`) also includes 
 ## Project Structure
 
 ```
-/cmd/server/main.go          Application entry point
-/internal/config/            Environment configuration
-/internal/db/                PostgreSQL connection + migrations
-/internal/auth/               Login, refresh, logout
-/internal/users/              User management CRUD
-/internal/immovable/          Form 02 immovable record CRUD
-/internal/movable/            Form 01 movable record CRUD
-/internal/photos/             Photo upload and storage
-/internal/workflow/           Approval workflow, comments
-/internal/audit/              Status history writes and reads
-/internal/dashboard/          Dashboard stats and unified record search
-/internal/export/             CSV and PDF export
-/internal/models/             Domain structs
-/internal/middleware/        CORS, logging, JWT auth, role guards
+/backend/cmd/server/main.go   Application entry point
+/backend/internal/config/     Environment configuration
+/backend/internal/db/         PostgreSQL connection + migrations
+/backend/internal/auth/       Login, refresh, logout
+/backend/internal/users/      User management CRUD
+/backend/internal/immovable/  Form 02 immovable record CRUD
+/backend/internal/movable/    Form 01 movable record CRUD
+/backend/internal/photos/     Photo upload and storage
+/backend/internal/workflow/   Approval workflow, comments
+/backend/internal/audit/      Status history writes and reads
+/backend/internal/dashboard/  Dashboard stats and unified record search
+/backend/internal/export/     CSV and PDF export
+/backend/internal/models/     Domain structs
+/backend/internal/middleware/ CORS, logging, JWT auth, role guards
+/frontend/                    React + TanStack Start app
+/deploy/                      Caddy config + Coolify guide (COOLIFY.md)
 ```
 
 ## Environment Variables
+
+| File | Use case |
+|------|----------|
+| `.env.example` | Native API dev (Postgres on `localhost:5434`) |
+| `.env.docker.example` | Local full Docker stack |
+| `.env.coolify.example` | Coolify production |
+| `frontend/.env.example` | Frontend dev (`VITE_API_URL`) |
+
+### API (native / `backend/`)
 
 | Variable | Required | Description |
 |----------|----------|-------------|
@@ -265,10 +269,24 @@ Record detail (`GET .../immovable/:id` and `GET .../movable/:id`) also includes 
 | `MEDIA_PATH` | No | Photo upload directory (default: `./media`) |
 | `ALLOWED_ORIGINS` | No | Comma-separated CORS origins |
 
+### Docker Compose / Coolify
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `POSTGRES_USER` | Yes | Database user |
+| `POSTGRES_PASSWORD` | Yes | Database password |
+| `POSTGRES_DB` | Yes | Database name |
+| `JWT_SECRET` | Yes | Access token signing secret |
+| `JWT_REFRESH_SECRET` | Yes | Refresh token signing secret |
+| `VITE_API_URL` | Yes | Public API URL (frontend build arg) |
+| `ALLOWED_ORIGINS` | Yes | Public site origin for CORS |
+
+Do **not** set `DB_URL` in Docker/Coolify — the API entrypoint builds it from `POSTGRES_*`.
+
 ## Build
 
 ```bash
-go build -o bin/server ./cmd/server
+cd backend && go build -o ../bin/server ./cmd/server
 ```
 
 ## Next Steps
